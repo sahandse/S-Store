@@ -5,7 +5,7 @@
     {
       "slug": "s-store",
       "name": "فروشگاه افزونه اس",
-      "version": "1.4.1",
+      "version": "1.5.0",
       "description": "ابزار مدیریت و بروزرسانی مرکزی افزونه‌ها",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/s-store",
@@ -13,7 +13,7 @@
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "",
+      "changelog": "بازطراحی کامل رابط S Store، داشبورد آماری، جستجو و فیلتر زنده، صفحه جزئیات افزونه، بروزرسانی مستقیم و آپدیت خودکار اختیاری.",
       "available": true,
       "source_subdir": "plugins/s-store"
     },
