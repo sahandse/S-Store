@@ -264,3 +264,21 @@ body.s-store-admin-page #adminmenu li.opensub>a{color:#fff;background:rgba(255,2
 .s-store-table .head,.s-store-table .row{grid-template-columns:minmax(220px,1.6fr) .55fr .65fr .7fr}
 @media(max-width:900px){.s-store-page-groups{grid-template-columns:1fr}}
 @media(max-width:640px){.s-store-pages-hero{align-items:flex-start;flex-direction:column}.s-store-table .head{display:none}.s-store-table .row{grid-template-columns:1fr;gap:7px}.s-store-installed-actions{justify-content:stretch}.s-store-installed-actions .s-store-btn{width:100%}}
+
+
+/* AJAX action progress */
+.s-store-ajax-action{position:relative;overflow:hidden;isolation:isolate}
+.s-store-ajax-action>.dashicons,.s-store-ajax-action>.s-store-btn-label{position:relative;z-index:2}
+.s-store-btn-progress{
+  position:absolute;z-index:1;inset:0 auto 0 0;width:0%;
+  background:rgba(255,255,255,.18);
+  transition:width .35s ease,background .25s ease
+}
+.s-store-ajax-action.is-loading{pointer-events:none;opacity:.95}
+.s-store-ajax-action.is-loading .s-store-btn-progress{width:86%;transition:width 8s cubic-bezier(.15,.65,.2,1)}
+.s-store-ajax-action.is-success{background:#18b77f!important;border-color:#18b77f!important;color:#fff!important;pointer-events:none}
+.s-store-ajax-action.is-success .s-store-btn-progress{width:100%;background:rgba(255,255,255,.12);transition:width .25s ease}
+.s-store-ajax-action.is-error{background:#fff1f3!important;border-color:#f2a9b9!important;color:#c83253!important}
+.s-store-ajax-action.is-error .s-store-btn-progress{width:100%;background:rgba(239,71,111,.08)}
+.s-store-ajax-error{display:block;color:#c83253;font-size:9px;margin-top:5px;line-height:1.6}
+.s-store-update-card.is-updated{border-color:#bfe8d7;background:linear-gradient(120deg,#fff,#f3fcf8)}
