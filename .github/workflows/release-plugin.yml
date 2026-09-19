@@ -1,0 +1,54 @@
+name: Release WordPress Plugin
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: Plugin folder slug under plugins/
+        required: true
+      version:
+        description: Version to publish (example 1.2.0)
+        required: true
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Build plugin ZIP
+        run: python scripts/build_plugin_zip.py "${{ inputs.slug }}"
+      - name: Update manifest version and package URL
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          p=pathlib.Path('manifest/plugins.json')
+          d=json.loads(p.read_text())
+          slug=os.environ['SLUG']; ver=os.environ['VERSION']
+          for x in d['plugins']:
+              if x['slug']==slug:
+                  x['version']=ver
+                  x['download_url']=f'https://github.com/${{ github.repository }}/releases/download/{slug}-v{ver}/{slug}.zip'
+                  break
+          else:
+              raise SystemExit('slug not found in manifest')
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+          PY
+        env:
+          SLUG: ${{ inputs.slug }}
+          VERSION: ${{ inputs.version }}
+      - name: Commit manifest
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add manifest/plugins.json
+          git diff --cached --quiet || git commit -m "Release ${{ inputs.slug }} v${{ inputs.version }}"
+          git push
+      - name: Create GitHub Release with plugin ZIP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ inputs.slug }}-v${{ inputs.version }}"
+          gh release create "$TAG" "dist/${{ inputs.slug }}.zip" --title "${{ inputs.slug }} v${{ inputs.version }}" --generate-notes
