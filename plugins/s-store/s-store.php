@@ -3,7 +3,7 @@
  * Plugin Name: فروشگاه افزونه اس
  * Plugin URI: https://github.com/sahandse/S-Store
  * Description: فروشگاه و بروزرسان مرکزی افزونه‌های اختصاصی سهند رضوان با نصب، بروزرسانی، جزئیات افزونه و منوی یکپارچه.
- * Version: 1.6.0
+ * Version: 1.7.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Sahand Rezvan
@@ -13,7 +13,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'S_STORE_VERSION', '1.6.0' );
+define( 'S_STORE_VERSION', '1.7.0' );
 define( 'S_STORE_FILE', __FILE__ );
 define( 'S_STORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'S_STORE_URL', plugin_dir_url( __FILE__ ) );
@@ -268,6 +268,47 @@ add_filter( 'admin_body_class', function( $classes ) {
     return $classes;
 } );
 
+function s_store_current_managed_context() {
+    $page = ! empty( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+    $map = [
+        'appointment-booking-pro' => [ 'slug' => 'appointment-booking-pro', 'title' => 'نوبت‌دهی حرفه‌ای' ],
+        'cardyar' => [ 'slug' => 'cardyar', 'title' => 'کارت‌یار' ],
+        'cash-installment-price' => [ 'slug' => 'cash-installment-price', 'title' => 'قیمت نقدی و اقساطی' ],
+        'delivery-calendar' => [ 'slug' => 'delivery-calendar', 'title' => 'تقویم ارسال' ],
+        'gheymatbar' => [ 'slug' => 'gheymatbar', 'title' => 'قیمت‌بار' ],
+        'login-sms-bale' => [ 'slug' => 'login-sms-bale', 'title' => 'ورود با پیامک و بله' ],
+        'lucky-wheel-pro' => [ 'slug' => 'lucky-wheel-pro', 'title' => 'گردونه شانس' ],
+        'media-optimizer' => [ 'slug' => 'media-optimizer', 'title' => 'بهینه‌ساز رسانه' ],
+        'price-compare-assistant' => [ 'slug' => 'price-compare-assistant', 'title' => 'دستیار مقایسه قیمت' ],
+        'product-video-reels' => [ 'slug' => 'product-video-reels', 'title' => 'ویدئوی محصول و ریلز' ],
+        'wc-market-sync' => [ 'slug' => 'wc-market-sync', 'title' => 'همگام‌سازی بازار' ],
+        'woo-cashback-wallet' => [ 'slug' => 'woo-cashback-wallet', 'title' => 'کش‌بک و کیف پول' ],
+        'woo-mobile-app-shell' => [ 'slug' => 'woo-mobile-app-shell', 'title' => 'اپ موبایل ووکامرس' ],
+        'woocommerce-sms-orders' => [ 'slug' => 'woocommerce-sms-orders', 'title' => 'پیامک سفارشات' ],
+        'smart-delivery-for-woocommerce' => [ 'slug' => 'smart-delivery-for-woocommerce', 'title' => 'ارسال هوشمند ووکامرس' ],
+        'support-button' => [ 'slug' => 'support-button', 'title' => 'پشتیبانی' ],
+        'support-button-conversations' => [ 'slug' => 'support-button', 'title' => 'گفتگوهای پشتیبانی' ],
+        'support-button-settings' => [ 'slug' => 'support-button', 'title' => 'تنظیمات پشتیبانی' ],
+        'do-marhalei' => [ 'slug' => 'domarhaleii', 'title' => 'تأیید هویت دو مرحله‌ای' ],
+        'wss-dashboard' => [ 'slug' => 'seo', 'title' => 'سئو سهند' ],
+        'smart-seo-ai-dashboard' => [ 'slug' => 'smart-seo-ai-pro', 'title' => 'سئو هوشمند AI' ],
+    ];
+
+    if ( 0 === strpos( $page, 'wss-' ) ) {
+        return [ 'slug' => 'seo', 'title' => 'سئو سهند' ];
+    }
+    if ( 0 === strpos( $page, 'smart-seo-ai-' ) ) {
+        return [ 'slug' => 'smart-seo-ai-pro', 'title' => 'سئو هوشمند AI' ];
+    }
+    if ( isset( $map[ $page ] ) ) return $map[ $page ];
+
+    if ( ! empty( $_GET['post_type'] ) && 'cardyar_payment' === sanitize_key( wp_unslash( $_GET['post_type'] ) ) ) {
+        return [ 'slug' => 'cardyar', 'title' => 'پرداخت‌های کارت‌یار' ];
+    }
+
+    return [ 'slug' => '', 'title' => '' ];
+}
+
 add_action( 'admin_enqueue_scripts', function() {
     if ( ! s_store_is_managed_admin_page() ) return;
 
@@ -278,7 +319,21 @@ add_action( 'admin_enqueue_scripts', function() {
     if ( 0 === strpos( $page, 's-store' ) ) {
         wp_enqueue_style( 's-store-admin', S_STORE_URL . 'assets/admin.css', [ 's-store-design-system' ], S_STORE_VERSION );
         wp_enqueue_script( 's-store-admin', S_STORE_URL . 'assets/admin.js', [], S_STORE_VERSION, true );
+        return;
     }
+
+    wp_enqueue_script( 's-store-managed-ui', S_STORE_URL . 'assets/managed-ui.js', [], S_STORE_VERSION, true );
+    $context = s_store_current_managed_context();
+    $plugin  = ! empty( $context['slug'] ) ? s_store_plugin_by_slug( $context['slug'] ) : null;
+    wp_localize_script( 's-store-managed-ui', 'SStoreManagedUI', [
+        'slug'      => $context['slug'] ?? '',
+        'title'     => $context['title'] ?? '',
+        'version'   => is_array( $plugin ) ? ( $plugin['version'] ?? '' ) : '',
+        'storeUrl'  => admin_url( 'admin.php?page=s-store' ),
+        'detailUrl' => ! empty( $context['slug'] )
+            ? add_query_arg( [ 'page' => 's-store', 'view' => 'plugin', 'slug' => $context['slug'] ], admin_url( 'admin.php' ) )
+            : '',
+    ] );
 } );
 
 add_action( 'admin_notices', function() {
