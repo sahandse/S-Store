@@ -1,0 +1,83 @@
+#toplevel_page_s-store .wp-submenu .s-store-sidebar-group{
+  margin:2px 0 0;
+  padding:0;
+}
+#toplevel_page_s-store .s-store-sidebar-group-toggle{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  padding:7px 11px;
+  border:0;
+  background:transparent;
+  color:rgba(240,246,252,.72);
+  cursor:pointer;
+  text-align:right;
+  font:inherit;
+}
+#toplevel_page_s-store .s-store-sidebar-group-toggle:hover,
+#toplevel_page_s-store .s-store-sidebar-group.is-open>.s-store-sidebar-group-toggle{
+  color:#fff;
+  background:rgba(255,255,255,.06);
+}
+#toplevel_page_s-store .s-store-sidebar-group-main{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-width:0;
+}
+#toplevel_page_s-store .s-store-sidebar-group-main img{
+  width:18px;
+  height:18px;
+  border-radius:5px;
+  object-fit:contain;
+  flex:0 0 18px;
+  background:#fff;
+}
+#toplevel_page_s-store .s-store-sidebar-group-main>.dashicons{
+  width:18px;
+  height:18px;
+  font-size:16px;
+  flex:0 0 18px;
+}
+#toplevel_page_s-store .s-store-sidebar-group-title{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:12px;
+  font-weight:600;
+}
+#toplevel_page_s-store .s-store-sidebar-chevron{
+  width:16px;
+  height:16px;
+  font-size:15px;
+  transition:transform .18s ease;
+}
+#toplevel_page_s-store .s-store-sidebar-group.is-open .s-store-sidebar-chevron{
+  transform:rotate(180deg);
+}
+#toplevel_page_s-store .s-store-sidebar-children{
+  margin:0 10px 3px 0;
+  padding:2px 8px 3px 0;
+  border-right:1px solid rgba(255,255,255,.12);
+}
+#toplevel_page_s-store .s-store-sidebar-child{
+  margin:0;
+}
+#toplevel_page_s-store .s-store-sidebar-child a{
+  display:block;
+  padding:5px 8px!important;
+  color:rgba(240,246,252,.62)!important;
+  font-size:11px!important;
+  line-height:1.45!important;
+  border-radius:6px;
+}
+#toplevel_page_s-store .s-store-sidebar-child a:hover,
+#toplevel_page_s-store .s-store-sidebar-child a.is-current{
+  color:#fff!important;
+  background:rgba(34,113,177,.24);
+}
+#toplevel_page_s-store .s-store-sidebar-child a.is-current{
+  font-weight:700!important;
+}
