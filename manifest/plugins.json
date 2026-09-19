@@ -5,7 +5,7 @@
     {
       "slug": "s-store",
       "name": "فروشگاه افزونه اس",
-      "version": "1.8.0",
+      "version": "1.9.0",
       "description": "ابزار مدیریت و بروزرسانی مرکزی افزونه‌ها",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/s-store",
@@ -13,7 +13,7 @@
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "داشبورد اختصاصی واقعی برای هر افزونه: آمار نسخه و تنظیمات، وضعیت سرویس‌ها و وابستگی‌ها، Activity Log واقعی نصب/فعال‌سازی/آپدیت و خطاها، Quick Actions و آمار تخصصی افزونه‌ها.",
+      "changelog": "Health Center مرکزی برای بررسی سلامت کل مجموعه: نسخه‌ها، سازگاری PHP/WordPress/WooCommerce، تنظیمات ناقص، WP-Cron و Cronهای اختصاصی، API/SMS/Bale/Basalam/Torob، خطاهای اخیر و وضعیت سبز/زرد/قرمز.",
       "available": true,
       "source_subdir": "plugins/s-store"
     },
