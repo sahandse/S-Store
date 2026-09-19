@@ -1,0 +1,49 @@
+/* WSS Frontend Styles */
+.wss-breadcrumb {
+    margin: 0 0 20px;
+    font-size: 13px;
+}
+
+.wss-breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 10px 0;
+    gap: 4px;
+}
+
+.wss-breadcrumb-item a {
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.wss-breadcrumb-item a:hover { text-decoration: underline; }
+
+.wss-breadcrumb-item.current { color: #666; }
+
+.wss-breadcrumb-sep { color: #bbb; font-size: 12px; }
+
+/* FAQ Styles */
+.wss-faq-item {
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.wss-faq-q {
+    background: #f8f9fa;
+    padding: 14px 18px;
+    margin: 0;
+    font-size: 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.wss-faq-a {
+    padding: 14px 18px;
+    font-size: 14px;
+    line-height: 1.7;
+}
