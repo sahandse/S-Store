@@ -3,7 +3,7 @@
  * Plugin Name: فروشگاه افزونه اس
  * Plugin URI: https://github.com/sahandse/S-Store
  * Description: فروشگاه و بروزرسان مرکزی افزونه‌های اختصاصی سهند رضوان با نصب، بروزرسانی، جزئیات افزونه و منوی یکپارچه.
- * Version: 2.4.0
+ * Version: 2.5.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Sahand Rezvan
@@ -13,7 +13,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'S_STORE_VERSION', '2.4.0' );
+define( 'S_STORE_VERSION', '2.5.0' );
 define( 'S_STORE_FILE', __FILE__ );
 define( 'S_STORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'S_STORE_URL', plugin_dir_url( __FILE__ ) );
@@ -520,7 +520,7 @@ add_action( 'admin_menu', function() {
     add_submenu_page( 's-store', 'فروشگاه افزونه‌ها', 'خانه', 'manage_options', 's-store', 's_store_dashboard_page' );
     add_submenu_page( 's-store', 'همه افزونه‌ها', 'همه افزونه‌ها', 'manage_options', 's-store-all', 's_store_all_page' );
     add_submenu_page( 's-store', 'افزونه‌های نصب‌شده', 'نصب‌شده‌ها', 'manage_options', 's-store-installed', 's_store_installed_page' );
-    add_submenu_page( 's-store', 'صفحات افزونه‌ها', 'صفحات افزونه‌ها', 'manage_options', 's-store-pages', 's_store_plugin_pages_page' );
+    add_submenu_page( 's-store', 'افزونه‌ها', 'افزونه‌ها', 'manage_options', 's-store-pages', 's_store_plugin_pages_page' );
     add_submenu_page( 's-store', 'بروزرسانی‌ها', 'بروزرسانی‌ها', 'update_plugins', 's-store-updates', 's_store_updates_page' );
     add_submenu_page( 's-store', 'مرکز سلامت', 'مرکز سلامت', 'manage_options', 's-store-health', 's_store_health_center_page' );
     add_submenu_page( 's-store', 'رفع خودکار', 'رفع خودکار', 'manage_options', 's-store-autofix', 's_store_autofix_center_page' );
@@ -529,6 +529,36 @@ add_action( 'admin_menu', function() {
     add_submenu_page( 's-store', 'درباره', 'درباره', 'manage_options', 's-store-about', 's_store_about_page' );
     do_action( 's_store_admin_menu' );
 }, 5 );
+
+add_action( 'admin_menu', function() {
+    global $submenu;
+
+    if ( empty( $submenu['s-store'] ) || ! is_array( $submenu['s-store'] ) ) return;
+
+    // Keep a complete snapshot for the grouped "افزونه‌ها" page before hiding noisy plugin pages.
+    $GLOBALS['s_store_full_submenu_registry'] = $submenu['s-store'];
+
+    $core_pages = [
+        's-store',
+        's-store-all',
+        's-store-installed',
+        's-store-pages',
+        's-store-updates',
+        's-store-health',
+        's-store-autofix',
+        's-store-backups',
+        's-store-settings',
+        's-store-about',
+    ];
+
+    $submenu['s-store'] = array_values( array_filter(
+        $submenu['s-store'],
+        function( $item ) use ( $core_pages ) {
+            $page = isset( $item[2] ) ? (string) $item[2] : '';
+            return in_array( $page, $core_pages, true );
+        }
+    ) );
+}, 999 );
 
 function s_store_installed_map() {
     require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -1938,7 +1968,11 @@ function s_store_plugin_admin_pages() {
         ];
     }
 
-    foreach ( (array) ( $submenu['s-store'] ?? [] ) as $item ) {
+    $registered_submenus = isset( $GLOBALS['s_store_full_submenu_registry'] ) && is_array( $GLOBALS['s_store_full_submenu_registry'] )
+        ? $GLOBALS['s_store_full_submenu_registry']
+        : (array) ( $submenu['s-store'] ?? [] );
+
+    foreach ( $registered_submenus as $item ) {
         $title = isset( $item[0] ) ? wp_strip_all_tags( $item[0] ) : '';
         $cap   = $item[1] ?? 'manage_options';
         $page  = $item[2] ?? '';
@@ -1991,9 +2025,9 @@ function s_store_plugin_admin_pages() {
 function s_store_plugin_pages_page() {
     $groups = s_store_plugin_admin_pages();
 
-    s_store_admin_shell_start( 'صفحات افزونه‌ها', 'منو و زیرصفحه‌های همه افزونه‌های فعال S Store، گروه‌بندی‌شده در یک صفحه.' );
+    s_store_admin_shell_start( 'افزونه‌ها', 'همه افزونه‌های فعال به‌صورت جمع‌شونده؛ برای دیدن صفحه‌های هر افزونه روی نام آن کلیک کنید.' );
 
-    echo '<section class="s-store-pages-hero"><div><span class="dashicons dashicons-screenoptions"></span><div><h2>منوهای افزونه‌های فعال</h2><p>هر افزونه یک گروه مستقل دارد و تمام صفحه‌ها و زیرصفحه‌های ثبت‌شده‌اش زیر همان گروه نمایش داده می‌شوند.</p></div></div><span>' . esc_html( count( $groups ) ) . ' افزونه فعال</span></section>';
+    echo '<section class="s-store-pages-hero"><div><span class="dashicons dashicons-screenoptions"></span><div><h2>افزونه‌های فعال</h2><p>زیرصفحه‌ها به‌صورت جمع‌شونده نگه‌داری می‌شوند تا منوی مدیریت شلوغ نشود.</p></div></div><span>' . esc_html( count( $groups ) ) . ' افزونه فعال</span></section>';
 
     if ( ! $groups ) {
         echo '<div class="s-store-all-good"><span class="dashicons dashicons-admin-plugins"></span><strong>افزونه فعال دیگری وجود ندارد</strong><p>بعد از فعال‌سازی افزونه‌های S Store، صفحه‌ها و زیرمنوهایشان اینجا نمایش داده می‌شود.</p></div>';
@@ -2004,20 +2038,20 @@ function s_store_plugin_pages_page() {
     echo '<div class="s-store-page-groups">';
     foreach ( $groups as $slug => $group ) {
         $plugin = $group['plugin'];
-        echo '<article class="s-store-page-group" id="s-store-pages-' . esc_attr( $slug ) . '">';
-        echo '<header class="s-store-page-group-head">';
+        echo '<details class="s-store-page-group" id="s-store-pages-' . esc_attr( $slug ) . '">';
+        echo '<summary class="s-store-page-group-head">';
         s_store_render_plugin_icon( $slug );
-        echo '<div><h3>' . esc_html( $plugin['name'] ?? $slug ) . '</h3><span>' . esc_html( $slug ) . ' · v' . esc_html( $group['local']['version'] ?? '' ) . '</span></div>';
+        echo '<div><h3>' . esc_html( $plugin['name'] ?? $slug ) . '</h3><span>' . esc_html( $slug ) . ' · v' . esc_html( $group['local']['version'] ?? '' ) . ' · ' . esc_html( count( $group['pages'] ) ) . ' صفحه</span></div>';
         echo '<span class="s-store-status active">فعال</span>';
-        echo '</header>';
+        echo '<span class="dashicons dashicons-arrow-down-alt2 s-store-accordion-arrow"></span>';
+        echo '</summary>';
 
         echo '<div class="s-store-page-tree">';
-        echo '<div class="s-store-page-tree-root"><span class="dashicons dashicons-category"></span><strong>' . esc_html( $plugin['name'] ?? $slug ) . '</strong></div>';
         echo '<div class="s-store-page-tree-children">';
         foreach ( $group['pages'] as $index => $page ) {
             echo '<a class="s-store-page-link" href="' . esc_url( $page['url'] ) . '"><span class="s-store-tree-line"></span><span class="dashicons dashicons-admin-page"></span><div><strong>' . esc_html( $page['title'] ?: 'صفحه افزونه' ) . '</strong><small>' . esc_html( $page['slug'] ) . '</small></div><span class="dashicons dashicons-arrow-left-alt2"></span></a>';
         }
-        echo '</div></div></article>';
+        echo '</div></div></details>';
     }
     echo '</div>';
 
@@ -2027,7 +2061,7 @@ function s_store_plugin_pages_page() {
 function s_store_installed_page() {
     $installed = s_store_installed_map();
     s_store_admin_shell_start( 'افزونه‌های نصب‌شده', 'وضعیت افزونه‌های S Store روی این وردپرس.' );
-    echo '<div class="s-store-installed-actions"><a class="s-store-btn primary" href="' . esc_url( admin_url( 'admin.php?page=s-store-pages' ) ) . '"><span class="dashicons dashicons-screenoptions"></span>صفحات و منوهای افزونه‌ها</a></div>';
+    echo '<div class="s-store-installed-actions"><a class="s-store-btn primary" href="' . esc_url( admin_url( 'admin.php?page=s-store-pages' ) ) . '"><span class="dashicons dashicons-screenoptions"></span>افزونه‌ها و زیرصفحه‌ها</a></div>';
     echo '<div class="s-store-panel"><div class="s-store-table"><div class="head"><span>افزونه</span><span>نسخه</span><span>وضعیت</span><span>صفحه‌ها</span></div>';
     foreach ( s_store_manifest_plugins() as $p ) {
         $slug = $p['slug'] ?? '';
@@ -2035,7 +2069,7 @@ function s_store_installed_page() {
         $x = $installed[ $slug ];
         echo '<div class="row"><span><strong>' . esc_html( $p['name'] ?? $slug ) . '</strong><small>' . esc_html( $slug ) . '</small></span><span>v' . esc_html( $x['version'] ) . '</span><span class="s-store-status ' . ( $x['active'] ? 'active' : 'installed' ) . '">' . ( $x['active'] ? 'فعال' : 'غیرفعال' ) . '</span><span>';
         if ( $x['active'] ) {
-            echo '<a class="s-store-inline-link" href="' . esc_url( admin_url( 'admin.php?page=s-store-pages#s-store-pages-' . $slug ) ) . '">نمایش منوها</a>';
+            echo '<a class="s-store-inline-link" href="' . esc_url( admin_url( 'admin.php?page=s-store-pages#s-store-pages-' . $slug ) ) . '">باز کردن</a>';
         } else {
             echo '<small>پس از فعال‌سازی</small>';
         }
