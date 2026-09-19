@@ -977,7 +977,12 @@ add_action( 'admin_post_s_store_install', function() {
     $result = $upgrader->install( esc_url_raw( $p['download_url'] ) );
     unset( $GLOBALS['s_store_install_slug'] );
 
-    if ( is_wp_error( $result ) || ! $result ) wp_die( 'نصب افزونه ناموفق بود.' );
+    if ( is_wp_error( $result ) || ! $result ) {
+        $message = is_wp_error( $result ) ? $result->get_error_message() : 'نصب افزونه ناموفق بود.';
+        s_store_activity_log( $slug, 'install', 'error', $message );
+        wp_die( esc_html( $message ) );
+    }
+    s_store_activity_log( $slug, 'install', 'success', 'افزونه با موفقیت نصب شد.' );
     wp_safe_redirect( admin_url( 'admin.php?page=s-store-installed' ) );
     exit;
 } );
@@ -1000,7 +1005,12 @@ add_action( 'admin_post_s_store_update', function() {
     $upgrader = new Plugin_Upgrader( $skin );
     $result = $upgrader->upgrade( $installed[ $slug ]['file'] );
 
-    if ( is_wp_error( $result ) || ! $result ) wp_die( 'بروزرسانی افزونه ناموفق بود.' );
+    if ( is_wp_error( $result ) || ! $result ) {
+        $message = is_wp_error( $result ) ? $result->get_error_message() : 'بروزرسانی افزونه ناموفق بود.';
+        s_store_activity_log( $slug, 'update', 'error', $message );
+        wp_die( esc_html( $message ) );
+    }
+    s_store_activity_log( $slug, 'update', 'success', 'افزونه با موفقیت بروزرسانی شد.' );
     wp_safe_redirect( admin_url( 'admin.php?page=s-store-updates' ) );
     exit;
 } );
@@ -1013,7 +1023,15 @@ add_action( 'admin_post_s_store_activate', function() {
     require_once ABSPATH . 'wp-admin/includes/plugin.php';
     $result = activate_plugin( $plugin );
 
-    if ( is_wp_error( $result ) ) wp_die( esc_html( $result->get_error_message() ) );
+    if ( is_wp_error( $result ) ) {
+        $folder = dirname( $plugin );
+        if ( '.' === $folder ) $folder = basename( $plugin, '.php' );
+        s_store_activity_log( $folder, 'activate', 'error', $result->get_error_message() );
+        wp_die( esc_html( $result->get_error_message() ) );
+    }
+    $folder = dirname( $plugin );
+    if ( '.' === $folder ) $folder = basename( $plugin, '.php' );
+    s_store_activity_log( $folder, 'activate', 'success', 'افزونه فعال شد.' );
     wp_safe_redirect( admin_url( 'admin.php?page=s-store-installed' ) );
     exit;
 } );
