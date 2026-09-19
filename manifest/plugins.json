@@ -5,15 +5,15 @@
     {
       "slug": "s-store",
       "name": "فروشگاه افزونه اس",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "description": "ابزار مدیریت و بروزرسانی مرکزی افزونه‌ها",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/s-store",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/s-store-v2.1.0/s-store.zip",
+      "download_url": "https://github.com/sahandse/S-Store/releases/download/s-store-v2.1.1/s-store.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "Backup & Rollback Center: Snapshot خودکار و اجباری قبل از Auto Fix و بروزرسانی، پشتیبان فایل‌های افزونه + تنظیمات شناخته‌شده + وضعیت Cron، نگه‌داری ۲۰ Snapshot آخر، Rollback یک‌کلیک و حذف Snapshot.",
+      "changelog": "رفع ثبت منوی والد S Store قبل از زیرمنوهای Native برای جلوگیری از 404 بعد از فعال‌سازی.",
       "available": true
     },
     {
@@ -34,15 +34,15 @@
     {
       "slug": "domarhaleii",
       "name": "احراز هویت دومرحله‌ای",
-      "version": "1.1.1",
+      "version": "1.1.2",
       "description": "احراز هویت دومرحله‌ای",
       "repo": "https://github.com/sahandse/domarhaleii",
       "homepage": "https://github.com/sahandse/domarhaleii",
-      "download_url": "https://github.com/sahandse/domarhaleii/archive/refs/heads/main.zip",
+      "download_url": "https://github.com/sahandse/domarhaleii/releases/download/domarhaleii-v1.1.2/domarhaleii.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "اتصال Native به S Store، حفظ منوی fallback و هماهنگی با نصب و بروزرسانی مرکزی.",
+      "changelog": "رفع 404/مشکل صفحه پس از فعال‌سازی زیر S Store، بارگذاری صحیح CSS/QR/JS در زیرمنوی Native و استفاده از ZIP Release استاندارد.",
       "available": true
     },
     {
