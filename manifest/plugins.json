@@ -120,15 +120,15 @@
     {
       "slug": "price-compare-assistant",
       "name": "دستیار مقایسه قیمت",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "description": "مقایسه قیمت و محتوای محصول",
       "repo": "https://github.com/sahandse/price-compare-assistant",
       "homepage": "https://github.com/sahandse/price-compare-assistant",
-      "download_url": "https://github.com/sahandse/price-compare-assistant/releases/download/price-compare-assistant-v1.2.0/price-compare-assistant.zip",
+      "download_url": "https://github.com/sahandse/price-compare-assistant/releases/download/price-compare-assistant-v1.3.0/price-compare-assistant.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "صفحه واقعی «محصولات و قیمت‌ها»: نمایش محصولات ووکامرس، قیمت فروشگاه کنار دیجی‌کالا/ترب/باسلام، جستجوی خودکار با نام/SKU و پیشنهاد تطبیق، انتخاب محصول متناظر، بروزرسانی قیمت رقبا و اعمال قیمت فروشگاه فقط با تایید مدیر.",
+      "changelog": "بازطراحی کامل صفحه محصولات و قیمت‌ها با کارت‌های حرفه‌ای؛ رتبه‌بندی نتایج بر اساس شباهت نام، انتخاب خودکار نزدیک‌ترین نتیجه و نمایش مستقیم اولین قیمت مشابه از دیجی‌کالا/ترب/باسلام، با fallback انتخاب دستی.",
       "available": true
     },
     {
