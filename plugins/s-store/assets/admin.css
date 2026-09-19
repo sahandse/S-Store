@@ -282,3 +282,17 @@ body.s-store-admin-page #adminmenu li.opensub>a{color:#fff;background:rgba(255,2
 .s-store-ajax-action.is-error .s-store-btn-progress{width:100%;background:rgba(239,71,111,.08)}
 .s-store-ajax-error{display:block;color:#c83253;font-size:9px;margin-top:5px;line-height:1.6}
 .s-store-update-card.is-updated{border-color:#bfe8d7;background:linear-gradient(120deg,#fff,#f3fcf8)}
+
+
+/* Compact grouped plugin submenu accordion */
+details.s-store-page-group{padding:0;overflow:hidden}
+details.s-store-page-group>summary{list-style:none;cursor:pointer;padding:14px}
+details.s-store-page-group>summary::-webkit-details-marker{display:none}
+details.s-store-page-group[open]>summary{background:#f8fbfe;border-bottom:1px solid #edf3f7}
+.s-store-page-group-head .s-store-accordion-arrow{flex:0 0 auto;width:20px;height:20px;font-size:18px;color:#7890a5;transition:transform .2s ease}
+details.s-store-page-group[open] .s-store-accordion-arrow{transform:rotate(180deg);color:#1478ff}
+details.s-store-page-group .s-store-page-tree{margin:0;padding:10px 14px 14px}
+details.s-store-page-group .s-store-page-tree-children{margin-top:0}
+details.s-store-page-group:not([open]) .s-store-page-tree{display:none}
+.s-store-page-groups{align-items:start}
+@media(max-width:900px){details.s-store-page-group>summary{padding:12px}}
