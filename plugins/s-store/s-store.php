@@ -3,7 +3,7 @@
  * Plugin Name: فروشگاه افزونه اس
  * Plugin URI: https://github.com/sahandse/S-Store
  * Description: فروشگاه و بروزرسان مرکزی افزونه‌های اختصاصی سهند رضوان با نصب، بروزرسانی، جزئیات افزونه و منوی یکپارچه.
- * Version: 1.9.0
+ * Version: 2.0.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Sahand Rezvan
@@ -13,7 +13,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'S_STORE_VERSION', '1.9.0' );
+define( 'S_STORE_VERSION', '2.0.0' );
 define( 'S_STORE_FILE', __FILE__ );
 define( 'S_STORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'S_STORE_URL', plugin_dir_url( __FILE__ ) );
@@ -219,7 +219,7 @@ add_filter( 'plugins_api', function( $result, $action, $args ) {
 
 function s_store_managed_page_slugs() {
     $slugs = [
-        's-store','s-store-all','s-store-installed','s-store-updates','s-store-health','s-store-settings','s-store-about',
+        's-store','s-store-all','s-store-installed','s-store-updates','s-store-health','s-store-autofix','s-store-settings','s-store-about',
         'appointment-booking-pro','cardyar','cash-installment-price','delivery-calendar','gheymatbar',
         'login-sms-bale','lucky-wheel-pro','media-optimizer','price-compare-assistant','product-video-reels',
         'wc-market-sync','woo-cashback-wallet','woo-mobile-app-shell','woocommerce-sms-orders',
@@ -394,6 +394,7 @@ add_action( 'admin_menu', function() {
     add_submenu_page( 's-store', 'افزونه‌های نصب‌شده', 'نصب‌شده‌ها', 'manage_options', 's-store-installed', 's_store_installed_page' );
     add_submenu_page( 's-store', 'بروزرسانی‌ها', 'بروزرسانی‌ها', 'update_plugins', 's-store-updates', 's_store_updates_page' );
     add_submenu_page( 's-store', 'مرکز سلامت', 'مرکز سلامت', 'manage_options', 's-store-health', 's_store_health_center_page' );
+    add_submenu_page( 's-store', 'رفع خودکار', 'رفع خودکار', 'manage_options', 's-store-autofix', 's_store_autofix_center_page' );
     add_submenu_page( 's-store', 'تنظیمات', 'تنظیمات', 'manage_options', 's-store-settings', 's_store_settings_page' );
     add_submenu_page( 's-store', 'درباره', 'درباره', 'manage_options', 's-store-about', 's_store_about_page' );
     do_action( 's_store_admin_menu' );
@@ -429,6 +430,242 @@ function s_store_stats( $plugins, $installed ) {
     }
     return $stats;
 }
+
+function s_store_autofix_url( $action, $slug = '', $return_page = 's-store-health' ) {
+    $args = [
+        'action'      => 's_store_autofix',
+        'fix'         => sanitize_key( $action ),
+        'slug'        => sanitize_key( $slug ),
+        'return_page' => sanitize_key( $return_page ),
+    ];
+    return wp_nonce_url(
+        add_query_arg( $args, admin_url( 'admin-post.php' ) ),
+        's_store_autofix_' . sanitize_key( $action ) . '_' . sanitize_key( $slug )
+    );
+}
+
+function s_store_find_installed_plugin_file_by_slug( $slug ) {
+    require_once ABSPATH . 'wp-admin/includes/plugin.php';
+    foreach ( get_plugins() as $file => $data ) {
+        $folder = dirname( $file );
+        if ( '.' === $folder ) $folder = basename( $file, '.php' );
+        if ( $folder === $slug ) return $file;
+    }
+    return '';
+}
+
+function s_store_health_check_fix( $item, $check ) {
+    $slug   = $item['slug'] ?? '';
+    $status = $check['status'] ?? '';
+    $title  = $check['title'] ?? '';
+
+    if ( ! in_array( $status, [ 'warn', 'error' ], true ) ) return null;
+
+    if ( 'وضعیت افزونه' === $title && ! empty( $item['local'] ) && empty( $item['local']['active'] ) ) {
+        return [ 'fix' => 'activate_plugin', 'label' => 'فعال‌سازی' ];
+    }
+
+    if ( 'نسخه قدیمی' === $title && ! empty( $item['local'] ) ) {
+        return [ 'fix' => 'update_plugin', 'label' => 'بروزرسانی' ];
+    }
+
+    if ( 'WooCommerce' === $title && 'error' === $status ) {
+        $woo_file = s_store_find_installed_plugin_file_by_slug( 'woocommerce' );
+        if ( $woo_file && ! is_plugin_active( $woo_file ) ) {
+            return [ 'fix' => 'activate_woocommerce', 'label' => 'فعال‌سازی WooCommerce' ];
+        }
+    }
+
+    if ( 'Cron پاکسازی' === $title && 'support-button' === $slug ) {
+        return [ 'fix' => 'repair_support_cron', 'label' => 'ترمیم Cron' ];
+    }
+
+    if ( 'Cron اسکن روزانه' === $title && 'smart-seo-ai-pro' === $slug ) {
+        return [ 'fix' => 'repair_smart_seo_cron', 'label' => 'ترمیم Cron' ];
+    }
+
+    if ( 'خطای اخیر S Store' === $title ) {
+        return [ 'fix' => 'clear_plugin_errors', 'label' => 'پاک‌کردن خطای ثبت‌شده' ];
+    }
+
+    return null;
+}
+
+function s_store_render_autofix_notice() {
+    if ( empty( $_GET['s_store_fix'] ) ) return;
+    $state = sanitize_key( wp_unslash( $_GET['s_store_fix'] ) );
+    $msg   = isset( $_GET['s_store_fix_message'] ) ? sanitize_text_field( wp_unslash( $_GET['s_store_fix_message'] ) ) : '';
+    $class = 'success' === $state ? 'notice-success' : ( 'warning' === $state ? 'notice-warning' : 'notice-error' );
+    echo '<div class="notice ' . esc_attr( $class ) . ' is-dismissible"><p>' . esc_html( $msg ?: ( 'success' === $state ? 'عملیات رفع خودکار با موفقیت انجام شد.' : 'عملیات رفع خودکار کامل نشد.' ) ) . '</p></div>';
+}
+
+function s_store_autofix_center_page() {
+    s_store_admin_shell_start( 'Auto Fix Center', 'رفع خودکار مشکلات امن، شناخته‌شده و قابل‌کنترل در مجموعه S Store.' );
+    s_store_render_autofix_notice();
+
+    echo '<section class="s-store-autofix-hero">';
+    echo '<div><span class="dashicons dashicons-admin-tools"></span><div><h2>مرکز رفع خودکار</h2><p>فقط عملیات کم‌ریسک انجام می‌شوند؛ کلیدهای API و Credentialها هرگز خودکار ساخته یا تغییر داده نمی‌شوند.</p></div></div>';
+    echo '<a class="s-store-btn ghost" href="' . esc_url( admin_url( 'admin.php?page=s-store-health' ) ) . '">بازگشت به مرکز سلامت</a>';
+    echo '</section>';
+
+    $tools = [
+        [ 'rebuild_manifest', 'بازسازی Manifest Cache', 'Manifest تازه از GitHub دریافت می‌شود.', 'update' ],
+        [ 'refresh_update_cache', 'تازه‌سازی Update Cache', 'Cache بروزرسانی افزونه‌های وردپرس پاک و دوباره ساخته می‌شود.', 'backup' ],
+        [ 'repair_all_crons', 'ترمیم Cronهای شناخته‌شده', 'Cronهای Support Button و Smart SEO AI در صورت نیاز دوباره زمان‌بندی می‌شوند.', 'clock' ],
+    ];
+
+    echo '<div class="s-store-autofix-grid">';
+    foreach ( $tools as $tool ) {
+        echo '<article class="s-store-autofix-card"><span class="dashicons dashicons-' . esc_attr( $tool[3] ) . '"></span><div><h3>' . esc_html( $tool[1] ) . '</h3><p>' . esc_html( $tool[2] ) . '</p></div><a class="s-store-btn primary" href="' . esc_url( s_store_autofix_url( $tool[0], '', 's-store-autofix' ) ) . '">اجرا</a></article>';
+    }
+    echo '</div>';
+
+    $report = s_store_health_report();
+    echo '<section class="s-store-section"><div class="s-store-section-head"><div><span class="dashicons dashicons-warning"></span><h2>موارد قابل رفع خودکار</h2></div></div>';
+    echo '<div class="s-store-autofix-issues">';
+    $count = 0;
+    foreach ( $report as $item ) {
+        foreach ( $item['checks'] as $check ) {
+            $fix = s_store_health_check_fix( $item, $check );
+            if ( ! $fix ) continue;
+            $count++;
+            echo '<div class="s-store-autofix-issue"><div><strong>' . esc_html( $item['name'] ) . ' — ' . esc_html( $check['title'] ) . '</strong><small>' . esc_html( $check['detail'] ) . '</small></div><a class="s-store-btn primary" href="' . esc_url( s_store_autofix_url( $fix['fix'], $item['slug'], 's-store-autofix' ) ) . '">' . esc_html( $fix['label'] ) . '</a></div>';
+        }
+    }
+    if ( ! $count ) {
+        echo '<div class="s-store-all-good"><span class="dashicons dashicons-yes-alt"></span><strong>مورد قابل رفع خودکار پیدا نشد</strong><p>مشکلات باقی‌مانده نیازمند بررسی یا ورود اطلاعات توسط مدیر هستند.</p></div>';
+    }
+    echo '</div></section>';
+
+    s_store_admin_shell_end();
+}
+
+add_action( 'admin_post_s_store_autofix', function() {
+    if ( ! current_user_can( 'manage_options' ) ) wp_die( 'دسترسی غیرمجاز.' );
+
+    $fix         = isset( $_GET['fix'] ) ? sanitize_key( wp_unslash( $_GET['fix'] ) ) : '';
+    $slug        = isset( $_GET['slug'] ) ? sanitize_key( wp_unslash( $_GET['slug'] ) ) : '';
+    $return_page = isset( $_GET['return_page'] ) ? sanitize_key( wp_unslash( $_GET['return_page'] ) ) : 's-store-health';
+    check_admin_referer( 's_store_autofix_' . $fix . '_' . $slug );
+
+    $state   = 'success';
+    $message = 'عملیات رفع خودکار انجام شد.';
+
+    try {
+        switch ( $fix ) {
+            case 'rebuild_manifest':
+                delete_site_transient( 's_store_manifest_v1' );
+                $manifest = s_store_get_manifest( true );
+                if ( empty( $manifest['plugins'] ) ) {
+                    throw new Exception( 'دریافت Manifest جدید ناموفق بود.' );
+                }
+                $message = 'Manifest Cache با موفقیت بازسازی شد.';
+                s_store_activity_log( 's-store', 'autofix_manifest', 'success', $message );
+                break;
+
+            case 'refresh_update_cache':
+                delete_site_transient( 'update_plugins' );
+                wp_update_plugins();
+                $message = 'Update Cache وردپرس تازه‌سازی شد.';
+                s_store_activity_log( 's-store', 'autofix_update_cache', 'success', $message );
+                break;
+
+            case 'activate_plugin':
+                $file = s_store_find_installed_plugin_file_by_slug( $slug );
+                if ( ! $file ) throw new Exception( 'فایل افزونه نصب‌شده پیدا نشد.' );
+                require_once ABSPATH . 'wp-admin/includes/plugin.php';
+                $result = activate_plugin( $file );
+                if ( is_wp_error( $result ) ) throw new Exception( $result->get_error_message() );
+                $message = 'افزونه با موفقیت فعال شد.';
+                s_store_activity_log( $slug, 'autofix_activate', 'success', $message );
+                break;
+
+            case 'activate_woocommerce':
+                $file = s_store_find_installed_plugin_file_by_slug( 'woocommerce' );
+                if ( ! $file ) throw new Exception( 'WooCommerce نصب نشده است.' );
+                require_once ABSPATH . 'wp-admin/includes/plugin.php';
+                $result = activate_plugin( $file );
+                if ( is_wp_error( $result ) ) throw new Exception( $result->get_error_message() );
+                $message = 'WooCommerce با موفقیت فعال شد.';
+                s_store_activity_log( $slug ?: 's-store', 'autofix_woocommerce', 'success', $message );
+                break;
+
+            case 'update_plugin':
+                $installed = s_store_installed_map();
+                if ( empty( $installed[ $slug ]['file'] ) ) throw new Exception( 'افزونه نصب‌شده پیدا نشد.' );
+                require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+                require_once ABSPATH . 'wp-admin/includes/file.php';
+                delete_site_transient( 'update_plugins' );
+                wp_update_plugins();
+                $upgrader = new Plugin_Upgrader( new Automatic_Upgrader_Skin() );
+                $result = $upgrader->upgrade( $installed[ $slug ]['file'] );
+                if ( is_wp_error( $result ) ) throw new Exception( $result->get_error_message() );
+                if ( ! $result ) throw new Exception( 'بروزرسانی افزونه انجام نشد.' );
+                $message = 'افزونه با موفقیت به آخرین نسخه بروزرسانی شد.';
+                s_store_activity_log( $slug, 'autofix_update', 'success', $message );
+                break;
+
+            case 'repair_support_cron':
+                wp_clear_scheduled_hook( 'sb_cleanup_event' );
+                if ( ! wp_next_scheduled( 'sb_cleanup_event' ) ) {
+                    wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'sb_cleanup_event' );
+                }
+                $message = 'Cron پاکسازی Support Button دوباره زمان‌بندی شد.';
+                s_store_activity_log( 'support-button', 'autofix_cron', 'success', $message );
+                break;
+
+            case 'repair_smart_seo_cron':
+                wp_clear_scheduled_hook( 'smart_seo_ai_daily_scan_cron' );
+                if ( ! wp_next_scheduled( 'smart_seo_ai_daily_scan_cron' ) ) {
+                    wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'smart_seo_ai_daily_scan_cron' );
+                }
+                $message = 'Cron اسکن روزانه Smart SEO AI دوباره زمان‌بندی شد.';
+                s_store_activity_log( 'smart-seo-ai-pro', 'autofix_cron', 'success', $message );
+                break;
+
+            case 'repair_all_crons':
+                if ( s_store_find_installed_plugin_file_by_slug( 'support-button' ) ) {
+                    if ( ! wp_next_scheduled( 'sb_cleanup_event' ) ) wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'sb_cleanup_event' );
+                }
+                if ( s_store_find_installed_plugin_file_by_slug( 'smart-seo-ai-pro' ) ) {
+                    if ( ! wp_next_scheduled( 'smart_seo_ai_daily_scan_cron' ) ) wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'smart_seo_ai_daily_scan_cron' );
+                }
+                $message = 'Cronهای شناخته‌شده بررسی و در صورت نیاز ترمیم شدند.';
+                s_store_activity_log( 's-store', 'autofix_all_crons', 'success', $message );
+                break;
+
+            case 'clear_plugin_errors':
+                $logs = get_option( 's_store_activity_log', [] );
+                if ( is_array( $logs ) ) {
+                    $logs = array_values( array_filter( $logs, function( $row ) use ( $slug ) {
+                        return !( ( $row['slug'] ?? '' ) === $slug && ( $row['status'] ?? '' ) === 'error' );
+                    } ) );
+                    update_option( 's_store_activity_log', array_slice( $logs, 0, 120 ), false );
+                }
+                $message = 'خطاهای ثبت‌شده S Store برای این افزونه پاک شدند.';
+                s_store_activity_log( $slug, 'autofix_clear_errors', 'info', $message );
+                break;
+
+            default:
+                throw new Exception( 'عملیات رفع خودکار معتبر نیست.' );
+        }
+    } catch ( Throwable $e ) {
+        $state   = 'error';
+        $message = $e->getMessage();
+        s_store_activity_log( $slug ?: 's-store', 'autofix_' . $fix, 'error', $message );
+    }
+
+    $target = add_query_arg(
+        [
+            'page'                => $return_page,
+            's_store_fix'         => $state,
+            's_store_fix_message' => rawurlencode( $message ),
+        ],
+        admin_url( 'admin.php' )
+    );
+    wp_safe_redirect( $target );
+    exit;
+} );
 
 function s_store_health_status_rank( $status ) {
     $map = [ 'ok' => 0, 'info' => 1, 'off' => 1, 'warn' => 2, 'error' => 3 ];
