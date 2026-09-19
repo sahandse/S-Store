@@ -1,0 +1,372 @@
+/**
+ * Smart SEO AI Suite Pro - Base Admin Stylesheet
+ * Supports LTR and RTL (Persian / Arabic) seamlessly
+ */
+
+:root {
+	--smart-primary: #4f46e5;
+	--smart-primary-hover: #4338ca;
+	--smart-success: #10b981;
+	--smart-warning: #f59e0b;
+	--smart-danger: #ef4444;
+	--smart-bg: #f8fafc;
+	--smart-card-bg: #ffffff;
+	--smart-text: #0f172a;
+	--smart-text-muted: #64748b;
+	--smart-border: #e2e8f0;
+	--smart-radius: 12px;
+	--smart-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+}
+
+.smart-seo-admin-wrap {
+	max-width: 1400px;
+	margin: 20px auto;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Vazirmatn", "IRANSans", sans-serif;
+	color: var(--smart-text);
+}
+
+.smart-top-header {
+	background: var(--smart-card-bg);
+	border: 1px solid var(--smart-border);
+	border-radius: var(--smart-radius);
+	padding: 24px 28px;
+	margin-bottom: 24px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	box-shadow: var(--smart-shadow);
+	flex-wrap: wrap;
+	gap: 16px;
+}
+
+.smart-brand {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.smart-icon-brand {
+	font-size: 38px;
+	width: 38px;
+	height: 38px;
+	color: var(--smart-primary);
+}
+
+.smart-plugin-title {
+	margin: 0;
+	font-size: 24px;
+	font-weight: 800;
+	color: var(--smart-text);
+}
+
+.smart-plugin-desc {
+	margin: 4px 0 0 0;
+	color: var(--smart-text-muted);
+	font-size: 14px;
+}
+
+.smart-header-actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.smart-btn-scan-all,
+.button-hero.smart-btn-scan-all {
+	background: #4f46e5 !important;
+	border-color: #4338ca !important;
+	color: #ffffff !important;
+	font-weight: 600;
+	box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3) !important;
+}
+
+.smart-btn-autofix-all,
+.button-hero.smart-btn-autofix-all {
+	background: #059669 !important;
+	border-color: #047857 !important;
+	color: #ffffff !important;
+	font-weight: 600;
+	box-shadow: 0 2px 4px rgba(5, 150, 105, 0.3) !important;
+}
+
+/* Boxes & Cards */
+.smart-box {
+	background: var(--smart-card-bg);
+	border: 1px solid var(--smart-border);
+	border-radius: var(--smart-radius);
+	margin-bottom: 24px;
+	box-shadow: var(--smart-shadow);
+	overflow: hidden;
+}
+
+.smart-box-header {
+	padding: 16px 20px;
+	border-bottom: 1px solid var(--smart-border);
+	background: #fafbfc;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.smart-box-header h2 {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--smart-text);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.smart-box-body {
+	padding: 20px;
+}
+
+/* Grid System */
+.smart-dash-two-cols {
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	gap: 24px;
+}
+
+@media (max-width: 1024px) {
+	.smart-dash-two-cols {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* Status Items Checklist */
+.smart-audit-items {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.smart-check-item {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 12px 14px;
+	border-radius: 8px;
+	margin-bottom: 8px;
+	background: #f8fafc;
+	border: 1px solid #edf2f7;
+}
+
+.smart-check-item .dashicons {
+	font-size: 20px;
+	margin-top: 2px;
+}
+
+.smart-check-item.status-pass .dashicons {
+	color: var(--smart-success);
+}
+
+.smart-check-item.status-warning .dashicons {
+	color: var(--smart-warning);
+}
+
+.smart-check-item.status-fail .dashicons {
+	color: var(--smart-danger);
+}
+
+.smart-check-item .check-text {
+	flex: 1;
+	font-size: 13.5px;
+	line-height: 1.5;
+}
+
+.smart-check-item .check-suggestion {
+	display: block;
+	margin-top: 4px;
+	color: #475569;
+	font-weight: 500;
+}
+
+/* Post Metabox Styling */
+.smart-seo-metabox-wrapper {
+	padding: 12px 6px;
+	font-size: 14px;
+}
+
+.smart-seo-meta-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 18px;
+	padding-bottom: 14px;
+	border-bottom: 1px solid var(--smart-border);
+}
+
+.smart-score-badge {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 6px;
+	padding: 8px 16px;
+	border-radius: 20px;
+	font-weight: bold;
+}
+
+.smart-score-badge.score-good {
+	background: #ecfdf5;
+	color: #065f46;
+	border: 1px solid #a7f3d0;
+}
+
+.smart-score-badge.score-warning {
+	background: #fffbeb;
+	color: #92400e;
+	border: 1px solid #fde68a;
+}
+
+.smart-score-badge.score-bad {
+	background: #fef2f2;
+	color: #991b1b;
+	border: 1px solid #fecaca;
+}
+
+.smart-score-badge .score-num {
+	font-size: 20px;
+}
+
+.smart-score-badge .score-total {
+	font-size: 12px;
+	opacity: 0.8;
+}
+
+.smart-form-group {
+	margin-bottom: 16px;
+}
+
+.smart-label-row {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 6px;
+}
+
+.smart-char-counter {
+	font-size: 12px;
+	color: var(--smart-text-muted);
+}
+
+.smart-input-with-btn {
+	display: flex;
+	gap: 8px;
+}
+
+.smart-input-with-btn input,
+.smart-input-with-btn textarea {
+	flex: 1;
+}
+
+/* Google SERP Preview */
+.smart-google-preview-box {
+	background: #ffffff;
+	border: 1px solid #dadce0;
+	border-radius: 8px;
+	padding: 14px 18px;
+	margin: 18px 0;
+}
+
+.smart-google-preview-box .preview-title {
+	font-size: 12px;
+	font-weight: bold;
+	color: #70757a;
+	margin-bottom: 8px;
+}
+
+.serp-url {
+	font-size: 12px;
+	color: #202124;
+	direction: ltr;
+	text-align: left;
+	margin-bottom: 2px;
+}
+
+.serp-title {
+	font-size: 18px;
+	color: #1a0dab;
+	font-weight: 500;
+	line-height: 1.3;
+	margin-bottom: 4px;
+	cursor: pointer;
+}
+
+.serp-title:hover {
+	text-decoration: underline;
+}
+
+.serp-desc {
+	font-size: 13px;
+	color: #4d5156;
+	line-height: 1.4;
+}
+
+/* AI Studio Result Box */
+.smart-ai-result-box {
+	min-height: 200px;
+	max-height: 480px;
+	overflow-y: auto;
+	background: #f8fafc;
+	border: 1px solid var(--smart-border);
+	border-radius: 8px;
+	padding: 16px;
+	white-space: pre-wrap;
+	line-height: 1.6;
+	font-size: 14px;
+}
+
+.smart-ai-result-box.loading {
+	opacity: 0.6;
+	pointer-events: none;
+}
+
+.smart-result-actions {
+	margin-top: 12px;
+}
+
+/* Mini Tags and Badges */
+.smart-tag {
+	background: #e2e8f0;
+	color: #334155;
+	padding: 3px 8px;
+	border-radius: 4px;
+	font-size: 11px;
+	font-weight: 600;
+}
+
+.smart-status-badge {
+	display: inline-block;
+	padding: 3px 8px;
+	border-radius: 12px;
+	font-size: 11px;
+	font-weight: bold;
+}
+
+.smart-status-badge.active {
+	background: #ecfdf5;
+	color: #047857;
+}
+
+.smart-status-badge.rolled-back {
+	background: #f1f5f9;
+	color: #64748b;
+}
+
+.smart-mini-score {
+	display: inline-block;
+	padding: 2px 6px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.smart-mini-score.score-good {
+	background: #d1fae5;
+	color: #065f46;
+}
+
+.smart-mini-score.score-warning {
+	background: #fef3c7;
+	color: #92400e;
+}
