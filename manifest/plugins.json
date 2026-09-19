@@ -5,15 +5,15 @@
     {
       "slug": "s-store",
       "name": "فروشگاه افزونه اس",
-      "version": "2.5.0",
+      "version": "2.6.0",
       "description": "ابزار مدیریت و بروزرسانی مرکزی افزونه‌ها",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/s-store",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/s-store-v2.5.0/s-store.zip",
+      "download_url": "https://github.com/sahandse/S-Store/releases/download/s-store-v2.6.0/s-store.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "جمع‌کردن زیرمنوهای افزونه‌ها: حذف صفحه‌های پراکنده از سایدبار S Store، نگه‌داشتن فقط منوی «افزونه‌ها» و نمایش هر افزونه به‌صورت Accordion جمع‌شونده با زیرصفحه‌های خودش.",
+      "changelog": "زیرمنوهای افزونه‌ها داخل خود منوی کناری وردپرس: هر افزونه زیر S Store به‌صورت گروه جمع‌شونده و صفحه‌هایش به‌صورت سطح سوم نمایش داده می‌شوند؛ صفحه فعلی خودکار باز می‌ماند.",
       "available": true
     },
     {
