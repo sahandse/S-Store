@@ -195,3 +195,17 @@ body.s-store-admin-page #adminmenu li.opensub>a{color:#fff;background:rgba(255,2
 .s-store-health-hero-actions{display:flex;gap:7px;flex-wrap:wrap}
 @media(max-width:960px){.s-store-autofix-grid{grid-template-columns:1fr}.s-store-autofix-hero{align-items:flex-start;flex-direction:column}}
 @media(max-width:640px){.s-store-autofix-issue{align-items:flex-start;flex-direction:column}.s-store-autofix-issue .s-store-btn{width:100%}.s-store-health-check{flex-wrap:wrap}.s-store-health-check .s-store-fix-btn{width:100%;justify-content:center;margin-top:4px}}
+
+
+/* Backup & Rollback Center */
+.s-store-backup-hero{display:flex;align-items:center;justify-content:space-between;gap:14px;background:linear-gradient(120deg,#fff,#f5faff 62%,#f0f8ff);border:1px solid var(--ss-border);border-radius:20px;padding:18px 20px;box-shadow:var(--ss-shadow);margin-bottom:14px}
+.s-store-backup-hero>div{display:flex;align-items:center;gap:12px}
+.s-store-backup-hero>div>.dashicons{width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:#eaf4ff;color:#1478ff;font-size:24px}
+.s-store-backup-hero h2{margin:0;color:#12395f;font-size:20px}.s-store-backup-hero p{margin:4px 0 0;color:#7b90a4;font-size:11px;line-height:1.8}
+.s-store-backup-hero>span{background:#edf6ff;color:#1478ff;border-radius:99px;padding:7px 10px;font-size:10px;font-weight:800}
+.s-store-backup-list{display:grid;gap:9px}
+.s-store-backup-card{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--ss-border);border-radius:16px;padding:13px 14px;box-shadow:0 6px 20px rgba(24,72,116,.04)}
+.s-store-backup-card>.s-store-plugin-icon{width:46px;height:46px;flex-basis:46px}
+.s-store-backup-copy{flex:1;min-width:0}.s-store-backup-copy strong,.s-store-backup-copy span,.s-store-backup-copy small{display:block}.s-store-backup-copy strong{color:#1b4168;font-size:12px}.s-store-backup-copy span{color:#758ba0;font-size:9px;margin-top:3px}.s-store-backup-copy small{color:#97a6b4;font-size:9px;margin-top:3px}
+.s-store-backup-actions{display:flex;gap:7px;flex-wrap:wrap}
+@media(max-width:700px){.s-store-backup-hero{align-items:flex-start;flex-direction:column}.s-store-backup-card{align-items:flex-start;flex-wrap:wrap}.s-store-backup-copy{min-width:calc(100% - 65px)}.s-store-backup-actions{width:100%}.s-store-backup-actions .s-store-btn{flex:1}}
