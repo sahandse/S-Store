@@ -3,7 +3,7 @@
  * Plugin Name: فروشگاه افزونه اس
  * Plugin URI: https://github.com/sahandse/S-Store
  * Description: فروشگاه و بروزرسان مرکزی افزونه‌های اختصاصی سهند رضوان با نصب، بروزرسانی، جزئیات افزونه و منوی یکپارچه.
- * Version: 2.3.0
+ * Version: 2.4.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Sahand Rezvan
@@ -13,7 +13,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'S_STORE_VERSION', '2.3.0' );
+define( 'S_STORE_VERSION', '2.4.0' );
 define( 'S_STORE_FILE', __FILE__ );
 define( 'S_STORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'S_STORE_URL', plugin_dir_url( __FILE__ ) );
@@ -107,7 +107,7 @@ function s_store_render_self_update_card( $compact = false ) {
     echo '</div>';
     echo '<div class="s-store-self-update-actions">';
     if ( $info['available'] && ! empty( $info['download_url'] ) ) {
-        echo '<a class="s-store-btn primary" href="' . esc_url( s_store_self_update_url() ) . '"><span class="dashicons dashicons-update"></span>بروزرسانی S Store</a>';
+        echo '<a class="s-store-btn primary s-store-ajax-action" data-action="update" data-slug="s-store" data-compact="1" href="' . esc_url( s_store_self_update_url() ) . '"><span class="s-store-btn-progress"></span><span class="dashicons dashicons-update"></span><span class="s-store-btn-label">بروزرسانی S Store</span></a>';
     }
     echo '<a class="s-store-btn ghost" href="' . esc_url( s_store_self_check_url( ! empty( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : 's-store' ) ) . '"><span class="dashicons dashicons-search"></span>بررسی نسخه جدید</a>';
     echo '<a class="s-store-btn ghost" target="_blank" rel="noopener" href="' . esc_url( $info['homepage'] ) . '"><span class="dashicons dashicons-external"></span>GitHub</a>';
@@ -422,6 +422,18 @@ add_action( 'admin_enqueue_scripts', function() {
     if ( 0 === strpos( $page, 's-store' ) ) {
         wp_enqueue_style( 's-store-admin', S_STORE_URL . 'assets/admin.css', [ 's-store-design-system' ], S_STORE_VERSION );
         wp_enqueue_script( 's-store-admin', S_STORE_URL . 'assets/admin.js', [], S_STORE_VERSION, true );
+        wp_localize_script( 's-store-admin', 'SStoreAjax', [
+            'url'   => admin_url( 'admin-ajax.php' ),
+            'nonce' => wp_create_nonce( 's_store_ajax_action' ),
+            'i18n'  => [
+                'working'    => 'در حال انجام…',
+                'installing' => 'در حال نصب…',
+                'activating' => 'در حال فعال‌سازی…',
+                'updating'   => 'در حال بروزرسانی…',
+                'done'       => 'انجام شد',
+                'error'      => 'عملیات ناموفق بود.',
+            ],
+        ] );
         return;
     }
 
@@ -1380,15 +1392,17 @@ function s_store_action_button( $p, $local, $compact = false ) {
     $slug = sanitize_key( $p['slug'] ?? '' );
     if ( ! $slug ) return;
 
+    $common = ' data-slug="' . esc_attr( $slug ) . '" data-compact="' . ( $compact ? '1' : '0' ) . '"';
+
     if ( ! $local && ! empty( $p['available'] ) && ! empty( $p['download_url'] ) ) {
         $url = wp_nonce_url( admin_url( 'admin-post.php?action=s_store_install&slug=' . rawurlencode( $slug ) ), 's_store_install_' . $slug );
-        echo '<a class="s-store-btn primary" href="' . esc_url( $url ) . '"><span class="dashicons dashicons-download"></span>نصب</a>';
+        echo '<a class="s-store-btn primary s-store-ajax-action" data-action="install"' . $common . ' href="' . esc_url( $url ) . '"><span class="s-store-btn-progress"></span><span class="dashicons dashicons-download"></span><span class="s-store-btn-label">نصب</span></a>';
     } elseif ( $local && ! $local['active'] ) {
         $url = wp_nonce_url( admin_url( 'admin-post.php?action=s_store_activate&plugin=' . rawurlencode( $local['file'] ) ), 's_store_activate_' . $local['file'] );
-        echo '<a class="s-store-btn primary" href="' . esc_url( $url ) . '"><span class="dashicons dashicons-controls-play"></span>فعال‌سازی</a>';
+        echo '<a class="s-store-btn primary s-store-ajax-action" data-action="activate" data-plugin="' . esc_attr( $local['file'] ) . '"' . $common . ' href="' . esc_url( $url ) . '"><span class="s-store-btn-progress"></span><span class="dashicons dashicons-controls-play"></span><span class="s-store-btn-label">فعال‌سازی</span></a>';
     } elseif ( $local && ! empty( $p['version'] ) && version_compare( $local['version'], $p['version'], '<' ) ) {
         $url = wp_nonce_url( admin_url( 'admin-post.php?action=s_store_update&slug=' . rawurlencode( $slug ) ), 's_store_update_' . $slug );
-        echo '<a class="s-store-btn primary" href="' . esc_url( $url ) . '"><span class="dashicons dashicons-update"></span>بروزرسانی</a>';
+        echo '<a class="s-store-btn primary s-store-ajax-action" data-action="update"' . $common . ' href="' . esc_url( $url ) . '"><span class="s-store-btn-progress"></span><span class="dashicons dashicons-update"></span><span class="s-store-btn-label">بروزرسانی</span></a>';
     } elseif ( $local ) {
         echo '<span class="s-store-btn success"><span class="dashicons dashicons-yes-alt"></span>فعال</span>';
     } else {
@@ -1400,7 +1414,6 @@ function s_store_action_button( $p, $local, $compact = false ) {
         echo '<a class="s-store-btn ghost" href="' . esc_url( $detail ) . '">جزئیات</a>';
     }
 }
-
 function s_store_render_plugin_card( $p, $installed ) {
     $slug = sanitize_key( $p['slug'] ?? '' );
     if ( ! $slug ) return;
@@ -2086,6 +2099,112 @@ function s_store_about_page() {
     echo '<div class="s-store-about-grid"><section class="s-store-panel"><span class="s-store-about-logo">S</span><h2>S Store</h2><p>نصب، مدیریت و بروزرسانی مرکزی افزونه‌های وردپرس با طراحی یکپارچه و slug ثابت.</p><div class="s-store-detail-meta"><span>نسخه ' . esc_html( S_STORE_VERSION ) . '</span><span>GPLv2+</span></div></section><section class="s-store-panel"><h3>توسعه‌دهنده</h3><p><strong>سهند رضوان · Sahand Rezvan</strong></p><p><a href="https://t.me/sahandse" target="_blank" rel="noopener">t.me/sahandse</a></p><p><a href="https://github.com/sahandse/S-Store" target="_blank" rel="noopener">GitHub / S-Store</a></p></section></div>';
     s_store_admin_shell_end();
 }
+
+function s_store_ajax_action_html( $slug, $compact = false ) {
+    $p = s_store_plugin_by_slug( $slug );
+    if ( ! $p ) return '';
+    $installed = s_store_installed_map();
+    ob_start();
+    s_store_action_button( $p, $installed[ $slug ] ?? null, $compact );
+    return ob_get_clean();
+}
+
+add_action( 'wp_ajax_s_store_plugin_action', function() {
+    check_ajax_referer( 's_store_ajax_action', 'nonce' );
+
+    $operation = isset( $_POST['operation'] ) ? sanitize_key( wp_unslash( $_POST['operation'] ) ) : '';
+    $slug      = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
+    $plugin    = isset( $_POST['plugin'] ) ? sanitize_text_field( wp_unslash( $_POST['plugin'] ) ) : '';
+    $compact   = ! empty( $_POST['compact'] );
+
+    if ( ! in_array( $operation, [ 'install', 'activate', 'update' ], true ) ) {
+        wp_send_json_error( [ 'message' => 'عملیات معتبر نیست.' ], 400 );
+    }
+
+    try {
+        if ( 'install' === $operation ) {
+            if ( ! current_user_can( 'install_plugins' ) ) throw new Exception( 'مجوز نصب افزونه را ندارید.' );
+            $p = s_store_plugin_by_slug( $slug );
+            if ( ! $p || empty( $p['available'] ) || empty( $p['download_url'] ) ) {
+                throw new Exception( 'بسته نصب آماده نیست.' );
+            }
+
+            require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+            require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+
+            $GLOBALS['s_store_install_slug'] = $slug;
+            $upgrader = new Plugin_Upgrader( new Automatic_Upgrader_Skin() );
+            $result = $upgrader->install( esc_url_raw( $p['download_url'] ) );
+            unset( $GLOBALS['s_store_install_slug'] );
+
+            if ( is_wp_error( $result ) ) throw new Exception( $result->get_error_message() );
+            if ( ! $result ) throw new Exception( 'نصب افزونه ناموفق بود.' );
+            s_store_activity_log( $slug, 'install', 'success', 'افزونه با AJAX نصب شد.' );
+        }
+
+        if ( 'activate' === $operation ) {
+            if ( ! current_user_can( 'activate_plugins' ) ) throw new Exception( 'مجوز فعال‌سازی افزونه را ندارید.' );
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+
+            if ( ! $plugin ) {
+                $installed = s_store_installed_map();
+                $plugin = $installed[ $slug ]['file'] ?? '';
+            }
+            if ( ! $plugin ) throw new Exception( 'فایل افزونه پیدا نشد.' );
+
+            $result = activate_plugin( $plugin );
+            if ( is_wp_error( $result ) ) throw new Exception( $result->get_error_message() );
+            s_store_activity_log( $slug, 'activate', 'success', 'افزونه با AJAX فعال شد.' );
+        }
+
+        if ( 'update' === $operation ) {
+            if ( ! current_user_can( 'update_plugins' ) ) throw new Exception( 'مجوز بروزرسانی افزونه را ندارید.' );
+
+            $installed = s_store_installed_map();
+            if ( empty( $installed[ $slug ]['file'] ) ) throw new Exception( 'افزونه نصب‌شده پیدا نشد.' );
+
+            $snapshot = s_store_snapshot_create( $slug, 'ajax-update' );
+            if ( is_wp_error( $snapshot ) ) {
+                throw new Exception( 'ساخت Snapshot ناموفق بود: ' . $snapshot->get_error_message() );
+            }
+
+            require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+
+            delete_site_transient( 'update_plugins' );
+            wp_update_plugins();
+
+            $GLOBALS['s_store_install_slug'] = $slug;
+            $upgrader = new Plugin_Upgrader( new Automatic_Upgrader_Skin() );
+            $result = $upgrader->upgrade( $installed[ $slug ]['file'] );
+            unset( $GLOBALS['s_store_install_slug'] );
+
+            if ( is_wp_error( $result ) ) throw new Exception( $result->get_error_message() );
+            if ( ! $result ) throw new Exception( 'بروزرسانی افزونه انجام نشد.' );
+
+            delete_site_transient( 'update_plugins' );
+            s_store_activity_log( $slug, 'update', 'success', 'افزونه با AJAX بروزرسانی شد.' );
+        }
+
+        $installed = s_store_installed_map();
+        $local = $installed[ $slug ] ?? null;
+        $p = s_store_plugin_by_slug( $slug );
+
+        wp_send_json_success( [
+            'message'         => 'عملیات با موفقیت انجام شد.',
+            'slug'            => $slug,
+            'operation'       => $operation,
+            'version'         => $local['version'] ?? ( $p['version'] ?? '' ),
+            'active'          => ! empty( $local['active'] ),
+            'action_html'     => s_store_ajax_action_html( $slug, $compact ),
+            'latest_version'  => $p['version'] ?? '',
+        ] );
+    } catch ( Throwable $e ) {
+        if ( $slug ) s_store_activity_log( $slug, $operation, 'error', $e->getMessage() );
+        wp_send_json_error( [ 'message' => $e->getMessage() ], 500 );
+    }
+} );
 
 add_action( 'admin_post_s_store_install', function() {
     if ( ! current_user_can( 'install_plugins' ) ) wp_die( 'دسترسی غیرمجاز.' );
