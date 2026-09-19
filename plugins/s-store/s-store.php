@@ -571,6 +571,7 @@ add_action( 'admin_post_s_store_autofix', function() {
                 break;
 
             case 'activate_plugin':
+                if ( ! current_user_can( 'activate_plugins' ) ) throw new Exception( 'مجوز فعال‌سازی افزونه را ندارید.' );
                 $file = s_store_find_installed_plugin_file_by_slug( $slug );
                 if ( ! $file ) throw new Exception( 'فایل افزونه نصب‌شده پیدا نشد.' );
                 require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -581,6 +582,7 @@ add_action( 'admin_post_s_store_autofix', function() {
                 break;
 
             case 'activate_woocommerce':
+                if ( ! current_user_can( 'activate_plugins' ) ) throw new Exception( 'مجوز فعال‌سازی افزونه را ندارید.' );
                 $file = s_store_find_installed_plugin_file_by_slug( 'woocommerce' );
                 if ( ! $file ) throw new Exception( 'WooCommerce نصب نشده است.' );
                 require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -591,6 +593,7 @@ add_action( 'admin_post_s_store_autofix', function() {
                 break;
 
             case 'update_plugin':
+                if ( ! current_user_can( 'update_plugins' ) ) throw new Exception( 'مجوز بروزرسانی افزونه را ندارید.' );
                 $installed = s_store_installed_map();
                 if ( empty( $installed[ $slug ]['file'] ) ) throw new Exception( 'افزونه نصب‌شده پیدا نشد.' );
                 require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
@@ -659,7 +662,7 @@ add_action( 'admin_post_s_store_autofix', function() {
         [
             'page'                => $return_page,
             's_store_fix'         => $state,
-            's_store_fix_message' => rawurlencode( $message ),
+            's_store_fix_message' => $message,
         ],
         admin_url( 'admin.php' )
     );
@@ -879,10 +882,14 @@ function s_store_health_center_page() {
     $summary = s_store_health_summary( $report );
 
     s_store_admin_shell_start( 'مرکز سلامت S Store', 'بررسی یکپارچه وضعیت افزونه‌ها، وابستگی‌ها، نسخه‌ها، Cron، APIها و خطاهای اخیر.' );
+    s_store_render_autofix_notice();
 
     echo '<section class="s-store-health-hero">';
     echo '<div><span class="dashicons dashicons-heart"></span><div><h2>Health Center</h2><p>این صفحه فقط از داده‌های واقعی همین وردپرس استفاده می‌کند.</p></div></div>';
+    echo '<div class="s-store-health-hero-actions">';
+    echo '<a class="s-store-btn primary" href="' . esc_url( admin_url( 'admin.php?page=s-store-autofix' ) ) . '"><span class="dashicons dashicons-admin-tools"></span>Auto Fix Center</a>';
     echo '<a class="s-store-btn ghost" href="' . esc_url( admin_url( 'admin.php?page=s-store-health' ) ) . '"><span class="dashicons dashicons-update"></span>بررسی دوباره</a>';
+    echo '</div>';
     echo '</section>';
 
     echo '<section class="s-store-health-summary">';
@@ -918,7 +925,12 @@ function s_store_health_center_page() {
         echo '</div><div class="s-store-health-checks">';
 
         foreach ( $item['checks'] as $check ) {
-            echo '<div class="s-store-health-check ' . esc_attr( $check['status'] ) . '"><i></i><div><strong>' . esc_html( $check['title'] ) . '</strong><small>' . esc_html( $check['detail'] ) . '</small></div></div>';
+            $fix = s_store_health_check_fix( $item, $check );
+            echo '<div class="s-store-health-check ' . esc_attr( $check['status'] ) . '"><i></i><div><strong>' . esc_html( $check['title'] ) . '</strong><small>' . esc_html( $check['detail'] ) . '</small></div>';
+            if ( $fix ) {
+                echo '<a class="s-store-fix-btn" href="' . esc_url( s_store_autofix_url( $fix['fix'], $item['slug'], 's-store-health' ) ) . '"><span class="dashicons dashicons-admin-tools"></span>' . esc_html( $fix['label'] ) . '</a>';
+            }
+            echo '</div>';
         }
         echo '</div></article>';
     }
