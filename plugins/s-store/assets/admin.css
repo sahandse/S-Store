@@ -140,3 +140,36 @@ body.s-store-admin-page #adminmenu li.opensub>a{color:#fff;background:rgba(255,2
 .s-store-quick-action strong{font-size:10px}
 @media(max-width:1080px){.s-store-metric-grid{grid-template-columns:repeat(2,1fr)}.s-store-dashboard-grid{grid-template-columns:1fr}}
 @media(max-width:640px){.s-store-metric-grid{grid-template-columns:1fr}.s-store-dashboard-head{align-items:flex-start;flex-direction:column}.s-store-quick-actions{grid-template-columns:1fr}}
+
+
+/* Health Center */
+.s-store-health-hero{display:flex;align-items:center;justify-content:space-between;gap:14px;background:linear-gradient(120deg,#fff,#f4faff 62%,#eefbf7);border:1px solid var(--ss-border);border-radius:20px;padding:18px 20px;box-shadow:var(--ss-shadow);margin-bottom:14px}
+.s-store-health-hero>div{display:flex;align-items:center;gap:12px}
+.s-store-health-hero>div>.dashicons{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:#e9f8f2;color:#17a976;font-size:23px}
+.s-store-health-hero h2{margin:0;color:#12375d;font-size:21px}.s-store-health-hero p{margin:4px 0 0;color:#7890a4;font-size:11px}
+.s-store-health-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.s-store-health-stat{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--ss-border);border-radius:16px;padding:14px;box-shadow:0 6px 18px rgba(24,72,116,.035)}
+.s-store-health-stat>.dashicons{width:40px;height:40px;display:grid;place-items:center;border-radius:12px}
+.s-store-health-stat small,.s-store-health-stat strong{display:block}.s-store-health-stat small{color:#71869a;font-size:10px}.s-store-health-stat strong{font-size:23px;margin-top:2px;color:#153a60}
+.s-store-health-stat.ok>.dashicons{background:#e5f8f0;color:#18a975}.s-store-health-stat.warn>.dashicons{background:#fff3de;color:#f39517}.s-store-health-stat.error>.dashicons{background:#ffe8ed;color:#df3d61}.s-store-health-stat.off>.dashicons{background:#eef3f7;color:#8293a2}
+.s-store-global-health{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.s-store-global-health>div{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--ss-border);border-radius:13px;padding:10px 12px}
+.s-store-global-health .dashicons{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:#edf5fc;color:#1478ff}
+.s-store-global-health strong,.s-store-global-health small{display:block}.s-store-global-health strong{font-size:10px;color:#2b4f70}.s-store-global-health small{font-size:9px;color:#8194a6;margin-right:auto}
+.s-store-global-health>div.ok{border-right:3px solid #18b77f}.s-store-global-health>div.warn{border-right:3px solid #ff9f1c}.s-store-global-health>div.info{border-right:3px solid #1478ff}
+.s-store-health-list{display:grid;gap:10px}
+.s-store-health-plugin{background:#fff;border:1px solid var(--ss-border);border-radius:18px;padding:15px;box-shadow:0 7px 22px rgba(24,72,116,.04)}
+.s-store-health-plugin.ok{border-right:4px solid #18b77f}.s-store-health-plugin.warn{border-right:4px solid #ff9f1c}.s-store-health-plugin.error{border-right:4px solid #ef476f}.s-store-health-plugin.off{border-right:4px solid #9aabb9}
+.s-store-health-plugin-head{display:flex;align-items:center;gap:11px}.s-store-health-plugin-head>.s-store-plugin-icon{width:46px;height:46px;flex-basis:46px}.s-store-health-plugin-head>div{flex:1}.s-store-health-plugin-head h3{margin:0;color:#173d64;font-size:14px}.s-store-health-plugin-head>div>span{display:block;color:#8a9baa;font-size:9px;margin-top:3px}
+.s-store-health-pill{border-radius:99px;padding:6px 9px;font-size:9px;font-weight:800}.s-store-health-pill.ok{background:#e5f8f0;color:#13875f}.s-store-health-pill.warn{background:#fff1da;color:#b66d08}.s-store-health-pill.error{background:#ffe7ed;color:#c83253}.s-store-health-pill.off{background:#eef2f5;color:#718291}.s-store-health-pill.info{background:#eaf4ff;color:#256da9}
+.s-store-health-checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:12px;padding-top:12px;border-top:1px solid #edf3f7}
+.s-store-health-check{display:flex;gap:9px;align-items:flex-start;background:#f9fbfd;border:1px solid #edf2f7;border-radius:11px;padding:9px}
+.s-store-health-check>i{width:8px;height:8px;border-radius:50%;margin-top:4px;flex:0 0 8px;background:#9aabb9}.s-store-health-check.ok>i{background:#18b77f}.s-store-health-check.warn>i{background:#ff9f1c}.s-store-health-check.error>i{background:#ef476f}.s-store-health-check.info>i{background:#1478ff}.s-store-health-check.off>i{background:#9aabb9}
+.s-store-health-check strong,.s-store-health-check small{display:block}.s-store-health-check strong{color:#294f70;font-size:10px}.s-store-health-check small{color:#8194a5;font-size:9px;line-height:1.7;margin-top:2px}
+.s-store-health-banner{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:14px;margin:16px 0 22px;padding:16px 18px;border-radius:18px;background:#fff;border:1px solid var(--ss-border);box-shadow:var(--ss-shadow)}
+.s-store-health-banner.ok{border-right:4px solid #18b77f}.s-store-health-banner.warn{border-right:4px solid #ff9f1c}.s-store-health-banner.error{border-right:4px solid #ef476f}
+.s-store-health-banner-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:#eaf5ff;color:#1478ff}.s-store-health-banner-icon .dashicons{font-size:24px;width:24px;height:24px}
+.s-store-health-banner-copy small{font-size:9px;letter-spacing:1px;color:#6e8ba5}.s-store-health-banner-copy h2{margin:3px 0;color:#14395f;font-size:16px}.s-store-health-banner-copy p{margin:0;color:#7c91a4;font-size:10px}
+.s-store-health-banner-counts{display:flex;gap:5px;flex-wrap:wrap}.s-store-health-banner-counts span{border-radius:99px;padding:5px 8px;font-size:9px;font-weight:700}.s-store-health-banner-counts .ok{background:#e7f8f1;color:#14865f}.s-store-health-banner-counts .warn{background:#fff1db;color:#b66d08}.s-store-health-banner-counts .error{background:#ffe8ed;color:#c83253}
+@media(max-width:960px){.s-store-health-summary,.s-store-global-health{grid-template-columns:repeat(2,1fr)}.s-store-health-banner{grid-template-columns:auto 1fr}.s-store-health-banner-counts,.s-store-health-banner>.s-store-btn{grid-column:1/-1}.s-store-health-checks{grid-template-columns:1fr}}
+@media(max-width:640px){.s-store-health-summary,.s-store-global-health{grid-template-columns:1fr}.s-store-health-hero{align-items:flex-start;flex-direction:column}.s-store-health-plugin-head{align-items:flex-start;flex-wrap:wrap}.s-store-health-plugin-head>.s-store-btn{width:100%}}
