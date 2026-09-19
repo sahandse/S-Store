@@ -5,15 +5,17 @@
     {
       "slug": "s-store",
       "name": "فروشگاه افزونه اس",
-      "version": "1.3.0",
+      "version": "1.4.1",
       "description": "ابزار مدیریت و بروزرسانی مرکزی افزونه‌ها",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/s-store",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/s-store-v1.3.0/s-store.zip",
+      "download_url": "https://github.com/sahandse/S-Store/archive/refs/heads/main.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": true,
+      "source_subdir": "plugins/s-store"
     },
     {
       "slug": "support-button",
@@ -22,11 +24,13 @@
       "description": "دکمه و ویجت پشتیبانی",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/support-button",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/support-button-v4.1.0/support-button.zip",
+      "download_url": "https://github.com/sahandse/S-Store/archive/refs/heads/main.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": true,
+      "source_subdir": "plugins/support-button"
     },
     {
       "slug": "domarhaleii",
@@ -35,11 +39,13 @@
       "description": "احراز هویت دومرحله‌ای",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/domarhaleii",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/domarhaleii-v1.1.0/domarhaleii.zip",
+      "download_url": "https://github.com/sahandse/S-Store/archive/refs/heads/main.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": true,
+      "source_subdir": "plugins/domarhaleii"
     },
     {
       "slug": "seo",
@@ -48,11 +54,13 @@
       "description": "سئو وردپرس و ووکامرس",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/seo",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/seo-v3.1.0/seo.zip",
+      "download_url": "https://github.com/sahandse/S-Store/archive/refs/heads/main.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": true,
+      "source_subdir": "plugins/seo"
     },
     {
       "slug": "smart-seo-ai-pro",
@@ -61,11 +69,13 @@
       "description": "سئو هوشمند",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/smart-seo-ai-pro",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/smart-seo-ai-pro-v1.0.0/smart-seo-ai-pro.zip",
+      "download_url": "https://github.com/sahandse/S-Store/archive/refs/heads/main.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": true,
+      "source_subdir": "plugins/smart-seo-ai-pro"
     },
     {
       "slug": "smart-delivery-for-woocommerce",
@@ -74,11 +84,12 @@
       "description": "زمان‌بندی تحویل ووکامرس",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/smart-delivery-for-woocommerce",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/smart-delivery-for-woocommerce-v1.1.0/smart-delivery-for-woocommerce.zip",
+      "download_url": "",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": false
     },
     {
       "slug": "lucky-wheel-pro",
@@ -87,11 +98,12 @@
       "description": "گردونه شانس ووکامرس",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/lucky-wheel-pro",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/lucky-wheel-pro-v1.1.0/lucky-wheel-pro.zip",
+      "download_url": "",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": false
     },
     {
       "slug": "wc-market-sync",
@@ -100,11 +112,12 @@
       "description": "همگام‌سازی باسلام و ترب",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/wc-market-sync",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/wc-market-sync-v1.2.0/wc-market-sync.zip",
+      "download_url": "",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": false
     },
     {
       "slug": "price-compare-assistant",
@@ -113,11 +126,12 @@
       "description": "مقایسه قیمت و محتوای محصول",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/price-compare-assistant",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/price-compare-assistant-v1.1.0/price-compare-assistant.zip",
+      "download_url": "",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": false
     },
     {
       "slug": "woo-mobile-app-shell",
@@ -126,11 +140,12 @@
       "description": "تجربه موبایل و PWA برای ووکامرس",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/woo-mobile-app-shell",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/woo-mobile-app-shell-v1.0.0/woo-mobile-app-shell.zip",
+      "download_url": "",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": false
     },
     {
       "slug": "appointment-booking-pro",
@@ -139,11 +154,12 @@
       "description": "نوبت‌دهی حرفه‌ای",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/appointment-booking-pro",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/appointment-booking-pro-v1.0.0/appointment-booking-pro.zip",
+      "download_url": "",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": false
     },
     {
       "slug": "media-optimizer",
@@ -152,11 +168,12 @@
       "description": "بهینه‌سازی تصاویر",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/media-optimizer",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/media-optimizer-v1.0.0/media-optimizer.zip",
+      "download_url": "",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": false
     },
     {
       "slug": "product-video-reels",
@@ -165,11 +182,12 @@
       "description": "ویدئوی محصول و ریلز",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/product-video-reels",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/product-video-reels-v1.0.0/product-video-reels.zip",
+      "download_url": "",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": false
     },
     {
       "slug": "woocommerce-sms-orders",
@@ -178,11 +196,12 @@
       "description": "پیامک سفارشات ووکامرس",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/woocommerce-sms-orders",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/woocommerce-sms-orders-v1.0.0/woocommerce-sms-orders.zip",
+      "download_url": "",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": false
     },
     {
       "slug": "login-sms-bale",
@@ -191,11 +210,12 @@
       "description": "ورود با پیامک و بله",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/login-sms-bale",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/login-sms-bale-v1.0.0/login-sms-bale.zip",
+      "download_url": "",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": false
     },
     {
       "slug": "cardyar",
@@ -204,11 +224,12 @@
       "description": "پرداخت کارت به کارت",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/cardyar",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/cardyar-v1.0.0/cardyar.zip",
+      "download_url": "",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": false
     },
     {
       "slug": "woo-cashback-wallet",
@@ -217,11 +238,12 @@
       "description": "کش‌بک و کیف پول",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/woo-cashback-wallet",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/woo-cashback-wallet-v1.0.0/woo-cashback-wallet.zip",
+      "download_url": "",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": false
     },
     {
       "slug": "gheymatbar",
@@ -230,11 +252,12 @@
       "description": "قیمت لحظه‌ای بازار",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/gheymatbar",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/gheymatbar-v1.0.0/gheymatbar.zip",
+      "download_url": "",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": false
     },
     {
       "slug": "cash-installment-price",
@@ -243,11 +266,13 @@
       "description": "قیمت نقدی و قسطی",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/cash-installment-price",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/cash-installment-price-v1.3.8/cash-installment-price.zip",
+      "download_url": "https://github.com/sahandse/S-Store/archive/refs/heads/main.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": true,
+      "source_subdir": "plugins/cash-installment-price"
     },
     {
       "slug": "delivery-calendar",
@@ -256,11 +281,12 @@
       "description": "تقویم ارسال",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/delivery-calendar",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/delivery-calendar-v1.0.0/delivery-calendar.zip",
+      "download_url": "",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": false
     },
     {
       "slug": "auto-webp-converter",
@@ -269,11 +295,12 @@
       "description": "تبدیل خودکار WebP",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/auto-webp-converter",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/auto-webp-converter-v1.0.0/auto-webp-converter.zip",
+      "download_url": "",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": ""
+      "changelog": "",
+      "available": false
     }
   ]
 }
