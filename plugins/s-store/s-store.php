@@ -3,7 +3,7 @@
  * Plugin Name: فروشگاه افزونه اس
  * Plugin URI: https://github.com/sahandse/S-Store
  * Description: فروشگاه و بروزرسان مرکزی افزونه‌های اختصاصی سهند رضوان با نصب، بروزرسانی، جزئیات افزونه و منوی یکپارچه.
- * Version: 2.6.0
+ * Version: 2.6.1
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Sahand Rezvan
@@ -13,7 +13,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'S_STORE_VERSION', '2.6.0' );
+define( 'S_STORE_VERSION', '2.6.1' );
 define( 'S_STORE_FILE', __FILE__ );
 define( 'S_STORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'S_STORE_URL', plugin_dir_url( __FILE__ ) );
@@ -585,36 +585,6 @@ add_action( 'admin_menu', function() {
     add_submenu_page( 's-store', 'درباره', 'درباره', 'manage_options', 's-store-about', 's_store_about_page' );
     do_action( 's_store_admin_menu' );
 }, 5 );
-
-add_action( 'admin_menu', function() {
-    global $submenu;
-
-    if ( empty( $submenu['s-store'] ) || ! is_array( $submenu['s-store'] ) ) return;
-
-    // Keep a complete snapshot for the grouped "افزونه‌ها" page before hiding noisy plugin pages.
-    $GLOBALS['s_store_full_submenu_registry'] = $submenu['s-store'];
-
-    $core_pages = [
-        's-store',
-        's-store-all',
-        's-store-installed',
-        's-store-pages',
-        's-store-updates',
-        's-store-health',
-        's-store-autofix',
-        's-store-backups',
-        's-store-settings',
-        's-store-about',
-    ];
-
-    $submenu['s-store'] = array_values( array_filter(
-        $submenu['s-store'],
-        function( $item ) use ( $core_pages ) {
-            $page = isset( $item[2] ) ? (string) $item[2] : '';
-            return in_array( $page, $core_pages, true );
-        }
-    ) );
-}, 999 );
 
 function s_store_installed_map() {
     require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -2024,9 +1994,7 @@ function s_store_plugin_admin_pages() {
         ];
     }
 
-    $registered_submenus = isset( $GLOBALS['s_store_full_submenu_registry'] ) && is_array( $GLOBALS['s_store_full_submenu_registry'] )
-        ? $GLOBALS['s_store_full_submenu_registry']
-        : (array) ( $submenu['s-store'] ?? [] );
+    $registered_submenus = (array) ( $submenu['s-store'] ?? [] );
 
     foreach ( $registered_submenus as $item ) {
         $title = isset( $item[0] ) ? wp_strip_all_tags( $item[0] ) : '';
