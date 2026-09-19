@@ -5,7 +5,7 @@
     {
       "slug": "s-store",
       "name": "فروشگاه افزونه اس",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "description": "ابزار مدیریت و بروزرسانی مرکزی افزونه‌ها",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/s-store",
@@ -13,7 +13,7 @@
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "Auto Fix Center: رفع خودکار امن برای Cacheهای بروزرسانی، Manifest Cache، Cronهای شناخته‌شده، فعال‌سازی افزونه/وابستگی نصب‌شده، بروزرسانی افزونه و پاک‌سازی خطاهای ثبت‌شده؛ همراه دکمه رفع کنار هشدارها و Activity Log.",
+      "changelog": "Backup & Rollback Center: Snapshot خودکار و اجباری قبل از Auto Fix و بروزرسانی، پشتیبان فایل‌های افزونه + تنظیمات شناخته‌شده + وضعیت Cron، نگه‌داری ۲۰ Snapshot آخر، Rollback یک‌کلیک و حذف Snapshot.",
       "available": true,
       "source_subdir": "plugins/s-store"
     },
