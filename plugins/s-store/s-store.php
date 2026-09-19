@@ -3,7 +3,7 @@
  * Plugin Name: فروشگاه افزونه اس
  * Plugin URI: https://github.com/sahandse/S-Store
  * Description: فروشگاه و بروزرسان مرکزی افزونه‌های اختصاصی سهند رضوان با نصب، بروزرسانی، جزئیات افزونه و منوی یکپارچه.
- * Version: 2.1.1
+ * Version: 2.2.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Sahand Rezvan
@@ -13,7 +13,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'S_STORE_VERSION', '2.1.1' );
+define( 'S_STORE_VERSION', '2.2.0' );
 define( 'S_STORE_FILE', __FILE__ );
 define( 'S_STORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'S_STORE_URL', plugin_dir_url( __FILE__ ) );
@@ -41,6 +41,109 @@ function s_store_get_manifest( $force = false ) {
 
     set_site_transient( $key, $data, 15 * MINUTE_IN_SECONDS );
     return $data;
+}
+
+function s_store_self_update_info( $force = false ) {
+    if ( $force ) {
+        delete_site_transient( 's_store_manifest_v1' );
+        delete_site_transient( 'update_plugins' );
+    }
+
+    $manifest = s_store_get_manifest( $force );
+    $remote = null;
+    if ( ! empty( $manifest['plugins'] ) && is_array( $manifest['plugins'] ) ) {
+        foreach ( $manifest['plugins'] as $plugin ) {
+            if ( ! empty( $plugin['slug'] ) && 's-store' === $plugin['slug'] ) {
+                $remote = $plugin;
+                break;
+            }
+        }
+    }
+
+    $latest = is_array( $remote ) ? ( $remote['version'] ?? '' ) : '';
+    $available = $latest && version_compare( S_STORE_VERSION, $latest, '<' );
+
+    return [
+        'current'      => S_STORE_VERSION,
+        'latest'       => $latest ?: S_STORE_VERSION,
+        'available'    => (bool) $available,
+        'download_url' => is_array( $remote ) ? ( $remote['download_url'] ?? '' ) : '',
+        'changelog'    => is_array( $remote ) ? ( $remote['changelog'] ?? '' ) : '',
+        'homepage'     => is_array( $remote ) ? ( $remote['homepage'] ?? $remote['repo'] ?? 'https://github.com/sahandse/S-Store' ) : 'https://github.com/sahandse/S-Store',
+    ];
+}
+
+function s_store_self_update_url() {
+    return wp_nonce_url(
+        admin_url( 'admin-post.php?action=s_store_update&slug=s-store&self=1' ),
+        's_store_update_s-store'
+    );
+}
+
+function s_store_self_check_url( $return_page = 's-store' ) {
+    return wp_nonce_url(
+        add_query_arg(
+            [
+                'action'      => 's_store_self_check',
+                'return_page' => sanitize_key( $return_page ),
+            ],
+            admin_url( 'admin-post.php' )
+        ),
+        's_store_self_check'
+    );
+}
+
+function s_store_render_self_update_card( $compact = false ) {
+    $info = s_store_self_update_info();
+
+    echo '<section class="s-store-self-update ' . ( $info['available'] ? 'has-update' : 'is-current' ) . '">';
+    echo '<div class="s-store-self-update-icon"><span class="dashicons dashicons-update"></span></div>';
+    echo '<div class="s-store-self-update-copy"><small>SELF UPDATE · GITHUB</small><h3>بروزرسانی خود S Store</h3>';
+    if ( $info['available'] ) {
+        echo '<p>نسخه <strong>' . esc_html( $info['latest'] ) . '</strong> در GitHub منتشر شده است. نسخه فعلی شما <strong>' . esc_html( $info['current'] ) . '</strong> است.</p>';
+    } else {
+        echo '<p>نسخه نصب‌شده <strong>' . esc_html( $info['current'] ) . '</strong> است و بروزرسانی جدیدی شناسایی نشده.</p>';
+    }
+    echo '</div>';
+    echo '<div class="s-store-self-update-actions">';
+    if ( $info['available'] && ! empty( $info['download_url'] ) ) {
+        echo '<a class="s-store-btn primary" href="' . esc_url( s_store_self_update_url() ) . '"><span class="dashicons dashicons-update"></span>بروزرسانی S Store</a>';
+    }
+    echo '<a class="s-store-btn ghost" href="' . esc_url( s_store_self_check_url( ! empty( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : 's-store' ) ) . '"><span class="dashicons dashicons-search"></span>بررسی نسخه جدید</a>';
+    echo '<a class="s-store-btn ghost" target="_blank" rel="noopener" href="' . esc_url( $info['homepage'] ) . '"><span class="dashicons dashicons-external"></span>GitHub</a>';
+    echo '</div>';
+    echo '</section>';
+}
+
+add_action( 'admin_post_s_store_self_check', function() {
+    if ( ! current_user_can( 'update_plugins' ) ) wp_die( 'دسترسی غیرمجاز.' );
+    check_admin_referer( 's_store_self_check' );
+
+    $return_page = isset( $_GET['return_page'] ) ? sanitize_key( wp_unslash( $_GET['return_page'] ) ) : 's-store';
+    $info = s_store_self_update_info( true );
+    wp_update_plugins();
+
+    $message = $info['available']
+        ? sprintf( 'نسخه جدید S Store (%s) در GitHub موجود است.', $info['latest'] )
+        : 'S Store روی آخرین نسخه موجود است.';
+
+    wp_safe_redirect(
+        add_query_arg(
+            [
+                'page'                 => $return_page,
+                's_store_self_checked' => 1,
+                's_store_self_message' => $message,
+            ],
+            admin_url( 'admin.php' )
+        )
+    );
+    exit;
+} );
+
+function s_store_render_self_update_notice() {
+    if ( empty( $_GET['s_store_self_checked'] ) ) return;
+    $message = isset( $_GET['s_store_self_message'] ) ? sanitize_text_field( wp_unslash( $_GET['s_store_self_message'] ) ) : '';
+    echo '<div class="notice notice-info is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
 }
 
 function s_store_manifest_plugins() {
@@ -360,12 +463,25 @@ add_action( 'admin_init', function() {
         'sanitize_callback' => function( $v ) { return (bool) $v; },
         'default'           => false,
     ] );
+    register_setting( 's_store_settings', 's_store_self_auto_update', [
+        'type'              => 'boolean',
+        'sanitize_callback' => function( $v ) { return (bool) $v; },
+        'default'           => false,
+    ] );
 } );
 
 add_filter( 'auto_update_plugin', function( $update, $item ) {
-    if ( ! get_option( 's_store_auto_updates', false ) || empty( $item->plugin ) ) return $update;
+    if ( empty( $item->plugin ) ) return $update;
+
     $folder = dirname( $item->plugin );
     if ( '.' === $folder ) $folder = basename( $item->plugin, '.php' );
+
+    if ( 's-store' === $folder ) {
+        return get_option( 's_store_self_auto_update', false ) ? true : $update;
+    }
+
+    if ( ! get_option( 's_store_auto_updates', false ) ) return $update;
+
     foreach ( s_store_manifest_plugins() as $p ) {
         if ( ! empty( $p['slug'] ) && $p['slug'] === $folder ) return true;
     }
@@ -1314,11 +1430,14 @@ function s_store_dashboard_page() {
     $stats = s_store_stats( $plugins, $installed );
 
     s_store_admin_shell_start( 'فروشگاه افزونه‌های S Store', 'همه افزونه‌های ضروری وردپرس را از یکجا نصب، مدیریت و بروزرسانی کنید.' );
+    s_store_render_self_update_notice();
 
     echo '<section class="s-store-hero">';
     echo '<div class="s-store-hero-copy"><span class="s-store-eyebrow">S STORE · WORDPRESS TOOLKIT</span><h2>سایتی سریع‌تر، امن‌تر و حرفه‌ای‌تر</h2><p>افزونه‌های اختصاصی شما با نصب سریع، بروزرسانی مرکزی و رابط مدیریتی یکپارچه.</p><div class="s-store-hero-points"><span>✓ بروزرسانی امن</span><span>✓ نسخه ثابت هر افزونه</span><span>✓ مدیریت یکجا</span></div></div>';
     echo '<div class="s-store-hero-art"><span class="s-store-shield"><span class="dashicons dashicons-wordpress"></span></span><i></i><b></b></div>';
     echo '</section>';
+
+    s_store_render_self_update_card();
 
     echo '<section class="s-store-toolbar"><div class="s-store-search"><span class="dashicons dashicons-search"></span><input id="s-store-search" type="search" placeholder="نام افزونه، قابلیت یا دسته را جستجو کنید…"></div>';
     echo '<div class="s-store-filters">';
@@ -1781,6 +1900,8 @@ function s_store_updates_page() {
     $stats = s_store_stats( $plugins, $installed );
 
     s_store_admin_shell_start( 'بروزرسانی‌ها', 'نسخه‌های جدید از GitHub و Manifest مرکزی بررسی می‌شوند.' );
+    s_store_render_self_update_notice();
+    s_store_render_self_update_card( true );
     echo '<div class="s-store-update-head"><div><strong>' . esc_html( $stats['updates'] ) . '</strong><span>بروزرسانی موجود</span></div><form method="post">';
     wp_nonce_field( 's_store_refresh_manifest' );
     submit_button( 'بررسی دوباره', 'primary', 's_store_refresh', false );
@@ -1801,9 +1922,14 @@ function s_store_updates_page() {
 
 function s_store_settings_page() {
     s_store_admin_shell_start( 'تنظیمات S Store', 'رفتار بروزرسانی و امکانات عمومی فروشگاه.' );
+    s_store_render_self_update_notice();
+    s_store_render_self_update_card( true );
     echo '<form method="post" action="options.php" class="s-store-settings-form">';
     settings_fields( 's_store_settings' );
-    echo '<section class="s-store-panel"><div class="s-store-panel-title"><span class="dashicons dashicons-update"></span><h3>بروزرسانی خودکار</h3></div><label class="s-store-toggle-row"><div><strong>آپدیت خودکار افزونه‌های S Store</strong><small>نسخه‌های جدید افزونه‌های موجود در Manifest به‌صورت خودکار نصب شوند.</small></div><input type="checkbox" name="s_store_auto_updates" value="1" ' . checked( (bool) get_option( 's_store_auto_updates', false ), true, false ) . '><i></i></label></section>';
+    echo '<section class="s-store-panel"><div class="s-store-panel-title"><span class="dashicons dashicons-update"></span><h3>بروزرسانی خودکار</h3></div>';
+    echo '<label class="s-store-toggle-row"><div><strong>آپدیت خودکار افزونه‌های S Store</strong><small>نسخه‌های جدید افزونه‌های موجود در Manifest به‌صورت خودکار نصب شوند.</small></div><input type="checkbox" name="s_store_auto_updates" value="1" ' . checked( (bool) get_option( 's_store_auto_updates', false ), true, false ) . '><i></i></label>';
+    echo '<label class="s-store-toggle-row"><div><strong>آپدیت خودکار خود S Store از GitHub</strong><small>اگر Release جدید S Store منتشر شود، وردپرس اجازه بروزرسانی خودکار همین فروشگاه را داشته باشد.</small></div><input type="checkbox" name="s_store_self_auto_update" value="1" ' . checked( (bool) get_option( 's_store_self_auto_update', false ), true, false ) . '><i></i></label>';
+    echo '</section>';
     echo '<section class="s-store-panel"><div class="s-store-panel-title"><span class="dashicons dashicons-cloud"></span><h3>منبع بروزرسانی</h3></div><code class="s-store-code">' . esc_html( S_STORE_MANIFEST_URL ) . '</code><p>نسخه، لینک ZIP و اطلاعات افزونه‌ها از Manifest مرکزی S Store خوانده می‌شوند.</p></section>';
     submit_button( 'ذخیره تنظیمات', 'primary s-store-save' );
     echo '</form>';
