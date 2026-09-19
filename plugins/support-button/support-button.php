@@ -3,7 +3,7 @@
  * Plugin Name: دکمه پشتیبانی
  * Plugin URI:  https://github.com/sahandse/support-widget
  * Description: دکمه شناور پشتیبانی با انیمیشن، فونت وزیر، بارگذاری لوگو، ساعت کاری، آمار کلیک
- * Version:     4.1.0
+ * Version: 4.1.1
  * Author:      سهند رضوان
  * License:     GPL v2 or later
  * Text Domain: support-button
