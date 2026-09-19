@@ -23,3 +23,7 @@
 
 Sahand Rezvan  
 https://t.me/sahandse
+
+## Backup & Rollback Center
+
+از نسخه 2.1.0، قبل از Auto Fix و بروزرسانی افزونه Snapshot خودکار از فایل‌های افزونه، تنظیمات شناخته‌شده و Cronهای مرتبط ساخته می‌شود. تا ۲۰ Snapshot آخر نگه‌داری می‌شود و Rollback یک‌کلیک در دسترس است.
