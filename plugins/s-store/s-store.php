@@ -104,6 +104,25 @@ function s_store_icon_for_slug( $slug ) {
     return $map[ $slug ] ?? 'admin-plugins';
 }
 
+function s_store_plugin_icon_url( $slug ) {
+    $slug = sanitize_key( $slug );
+    $path = S_STORE_DIR . 'assets/icons/' . $slug . '.svg';
+    if ( file_exists( $path ) ) {
+        return S_STORE_URL . 'assets/icons/' . $slug . '.svg';
+    }
+    return '';
+}
+
+function s_store_render_plugin_icon( $slug, $extra_class = '' ) {
+    $url = s_store_plugin_icon_url( $slug );
+    $class = 's-store-plugin-icon ' . trim( $extra_class );
+    if ( $url ) {
+        echo '<span class="' . esc_attr( $class . ' has-image' ) . '"><img src="' . esc_url( $url ) . '" alt="" loading="lazy"></span>';
+        return;
+    }
+    echo '<span class="' . esc_attr( $class . ' tone-' . ( abs( crc32( $slug ) ) % 6 ) ) . '"><span class="dashicons dashicons-' . esc_attr( s_store_icon_for_slug( $slug ) ) . '"></span></span>';
+}
+
 function s_store_upgrader_source_selection( $source, $remote_source, $upgrader, $hook_extra ) {
     if ( ! is_a( $upgrader, 'Plugin_Upgrader' ) ) return $source;
 
@@ -325,7 +344,7 @@ function s_store_render_plugin_card( $p, $installed ) {
 
     echo '<article class="s-store-plugin-card" data-s-store-plugin data-category="' . esc_attr( $category ) . '" data-search="' . esc_attr( $search ) . '">';
     echo '<a class="s-store-plugin-main" href="' . esc_url( add_query_arg( [ 'page' => 's-store', 'view' => 'plugin', 'slug' => $slug ], admin_url( 'admin.php' ) ) ) . '">';
-    echo '<span class="s-store-plugin-icon tone-' . esc_attr( abs( crc32( $slug ) ) % 6 ) . '"><span class="dashicons dashicons-' . esc_attr( s_store_icon_for_slug( $slug ) ) . '"></span></span>';
+    s_store_render_plugin_icon( $slug );
     echo '<span class="s-store-plugin-copy"><strong>' . esc_html( $p['name'] ?? $slug ) . '</strong><span>' . esc_html( wp_trim_words( $p['description'] ?? 'افزونه حرفه‌ای وردپرس', 12 ) ) . '</span></span></a>';
     echo '<div class="s-store-plugin-meta"><span>v' . esc_html( $p['version'] ?? '-' ) . '</span><span class="s-store-status ' . esc_attr( $class ) . '">' . esc_html( $state ) . '</span></div>';
     echo '<div class="s-store-plugin-actions">';
@@ -378,7 +397,7 @@ function s_store_dashboard_page() {
         foreach ( $plugins as $p ) {
             $slug = $p['slug'] ?? '';
             if ( empty( $installed[ $slug ] ) || empty( $p['version'] ) || ! version_compare( $installed[ $slug ]['version'], $p['version'], '<' ) ) continue;
-            echo '<div class="s-store-update-card"><span class="s-store-plugin-icon tone-' . esc_attr( abs( crc32( $slug ) ) % 6 ) . '"><span class="dashicons dashicons-' . esc_attr( s_store_icon_for_slug( $slug ) ) . '"></span></span><div><strong>' . esc_html( $p['name'] ?? $slug ) . '</strong><small>v' . esc_html( $installed[ $slug ]['version'] ) . ' ← v' . esc_html( $p['version'] ) . '</small></div>';
+            echo '<div class="s-store-update-card">'; s_store_render_plugin_icon( $slug ); echo '<div><strong>' . esc_html( $p['name'] ?? $slug ) . '</strong><small>v' . esc_html( $installed[ $slug ]['version'] ) . ' ← v' . esc_html( $p['version'] ) . '</small></div>';
             s_store_action_button( $p, $installed[ $slug ], true );
             echo '</div>';
         }
@@ -435,7 +454,7 @@ function s_store_plugin_detail_page() {
 
     echo '<a class="s-store-back" href="' . esc_url( admin_url( 'admin.php?page=s-store' ) ) . '">← بازگشت به فروشگاه</a>';
     echo '<section class="s-store-detail-hero">';
-    echo '<span class="s-store-plugin-icon detail tone-' . esc_attr( abs( crc32( $slug ) ) % 6 ) . '"><span class="dashicons dashicons-' . esc_attr( s_store_icon_for_slug( $slug ) ) . '"></span></span>';
+    s_store_render_plugin_icon( $slug, 'detail' );
     echo '<div class="s-store-detail-copy"><div class="s-store-detail-title"><h2>' . esc_html( $p['name'] ?? $slug ) . '</h2>';
     if ( $local ) echo '<span class="s-store-status ' . ( $local['active'] ? 'active' : 'installed' ) . '">' . ( $local['active'] ? 'فعال' : 'نصب‌شده' ) . '</span>';
     echo '</div><p>' . esc_html( $p['description'] ?? 'افزونه حرفه‌ای وردپرس از مجموعه S Store.' ) . '</p><div class="s-store-detail-meta"><span>نسخه ' . esc_html( $p['version'] ?? '-' ) . '</span><span>WordPress ' . esc_html( $p['requires'] ?? '6.0+' ) . '</span><span>PHP ' . esc_html( $p['requires_php'] ?? '7.4+' ) . '</span></div></div>';
