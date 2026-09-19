@@ -183,3 +183,18 @@ document.addEventListener('DOMContentLoaded',function(){
     }
   });
 })();
+
+
+/* Open grouped plugin accordion when navigated with a hash */
+(function(){
+  const openHashTarget = () => {
+    if (!location.hash || !location.hash.startsWith('#s-store-pages-')) return;
+    const target = document.querySelector(location.hash);
+    if (target && target.tagName === 'DETAILS') {
+      target.open = true;
+      setTimeout(() => target.scrollIntoView({behavior:'smooth', block:'start'}), 80);
+    }
+  };
+  document.addEventListener('DOMContentLoaded', openHashTarget);
+  window.addEventListener('hashchange', openHashTarget);
+})();
