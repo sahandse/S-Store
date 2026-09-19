@@ -3,7 +3,7 @@
  * Plugin Name: فروشگاه افزونه اس
  * Plugin URI: https://github.com/sahandse/S-Store
  * Description: فروشگاه و بروزرسان مرکزی افزونه‌های اختصاصی سهند رضوان با نصب، بروزرسانی، جزئیات افزونه و منوی یکپارچه.
- * Version: 2.1.0
+ * Version: 2.1.1
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Sahand Rezvan
@@ -13,7 +13,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'S_STORE_VERSION', '2.1.0' );
+define( 'S_STORE_VERSION', '2.1.1' );
 define( 'S_STORE_FILE', __FILE__ );
 define( 'S_STORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'S_STORE_URL', plugin_dir_url( __FILE__ ) );
@@ -399,7 +399,7 @@ add_action( 'admin_menu', function() {
     add_submenu_page( 's-store', 'تنظیمات', 'تنظیمات', 'manage_options', 's-store-settings', 's_store_settings_page' );
     add_submenu_page( 's-store', 'درباره', 'درباره', 'manage_options', 's-store-about', 's_store_about_page' );
     do_action( 's_store_admin_menu' );
-}, 20 );
+}, 5 );
 
 function s_store_installed_map() {
     require_once ABSPATH . 'wp-admin/includes/plugin.php';
