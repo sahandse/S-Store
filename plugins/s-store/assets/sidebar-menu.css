@@ -81,3 +81,50 @@
 #toplevel_page_s-store .s-store-sidebar-child a.is-current{
   font-weight:700!important;
 }
+
+
+#toplevel_page_s-store .s-store-sidebar-master{
+  margin:4px 0 2px;
+  padding:0;
+  border-top:1px solid rgba(255,255,255,.08);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+#toplevel_page_s-store .s-store-sidebar-master-toggle{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:8px 11px;
+  border:0;
+  background:rgba(255,255,255,.03);
+  color:#fff;
+  cursor:pointer;
+  text-align:right;
+  font:inherit;
+  font-weight:700;
+}
+#toplevel_page_s-store .s-store-sidebar-master-toggle>span:first-child{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+#toplevel_page_s-store .s-store-sidebar-master-actions{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+#toplevel_page_s-store .s-store-open-all{
+  font-size:9px;
+  color:rgba(255,255,255,.6);
+  font-weight:400;
+}
+#toplevel_page_s-store .s-store-open-all:hover{
+  color:#fff;
+}
+#toplevel_page_s-store .s-store-sidebar-groups{
+  padding:3px 0 4px;
+}
+#toplevel_page_s-store .s-store-native-plugin-submenu[hidden]{
+  display:none!important;
+}
