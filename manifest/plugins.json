@@ -5,7 +5,7 @@
     {
       "slug": "s-store",
       "name": "فروشگاه افزونه اس",
-      "version": "1.7.0",
+      "version": "1.8.0",
       "description": "ابزار مدیریت و بروزرسانی مرکزی افزونه‌ها",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/s-store",
@@ -13,7 +13,7 @@
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "UI Shell مشترک برای همه پنل‌های افزونه‌ها: هدر استاندارد، وضعیت و نسخه، میانبر جزئیات و S Store، ناوبری بخش‌ها، تشخیص تغییرات ذخیره‌نشده و نوار ذخیره ثابت.",
+      "changelog": "داشبورد اختصاصی واقعی برای هر افزونه: آمار نسخه و تنظیمات، وضعیت سرویس‌ها و وابستگی‌ها، Activity Log واقعی نصب/فعال‌سازی/آپدیت و خطاها، Quick Actions و آمار تخصصی افزونه‌ها.",
       "available": true,
       "source_subdir": "plugins/s-store"
     },
