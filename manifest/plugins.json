@@ -5,15 +5,15 @@
     {
       "slug": "s-store",
       "name": "فروشگاه افزونه اس",
-      "version": "2.1.1",
+      "version": "2.2.0",
       "description": "ابزار مدیریت و بروزرسانی مرکزی افزونه‌ها",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/s-store",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/s-store-v2.1.1/s-store.zip",
+      "download_url": "https://github.com/sahandse/S-Store/releases/download/s-store-v2.2.0/s-store.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "رفع ثبت منوی والد S Store قبل از زیرمنوهای Native برای جلوگیری از 404 بعد از فعال‌سازی.",
+      "changelog": "Self Update برای خود S Store: بررسی نسخه جدید از GitHub/Manifest، دکمه بروزرسانی مستقیم، اعلان در داشبورد و صفحه بروزرسانی‌ها، گزینه آپدیت خودکار خود S Store و Snapshot قبل از آپدیت.",
       "available": true
     },
     {
