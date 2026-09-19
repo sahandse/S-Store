@@ -3,7 +3,7 @@
  * Plugin Name: فروشگاه افزونه اس
  * Plugin URI: https://github.com/sahandse/S-Store
  * Description: فروشگاه و بروزرسان مرکزی افزونه‌های اختصاصی سهند رضوان با نصب، بروزرسانی و منوی یکپارچه.
- * Version: 1.4.0
+ * Version: 1.4.1
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Sahand Rezvan
@@ -13,7 +13,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'S_STORE_VERSION', '1.4.0' );
+define( 'S_STORE_VERSION', '1.4.1' );
 define( 'S_STORE_FILE', __FILE__ );
 define( 'S_STORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'S_STORE_URL', plugin_dir_url( __FILE__ ) );
@@ -50,6 +50,44 @@ function s_store_plugin_by_slug( $slug ) {
     }
     return null;
 }
+
+function s_store_upgrader_source_selection( $source, $remote_source, $upgrader, $hook_extra ) {
+    if ( ! is_a( $upgrader, 'Plugin_Upgrader' ) ) return $source;
+
+    $slug = '';
+    if ( ! empty( $GLOBALS['s_store_install_slug'] ) ) {
+        $slug = sanitize_key( $GLOBALS['s_store_install_slug'] );
+    } elseif ( ! empty( $hook_extra['plugin'] ) ) {
+        $folder = dirname( $hook_extra['plugin'] );
+        $slug = ( '.' === $folder ) ? basename( $hook_extra['plugin'], '.php' ) : $folder;
+    }
+
+    if ( ! $slug ) return $source;
+    $p = s_store_plugin_by_slug( $slug );
+    if ( ! $p || empty( $p['source_subdir'] ) ) return $source;
+
+    $nested = trailingslashit( $source ) . trim( $p['source_subdir'], '/' );
+    if ( ! is_dir( $nested ) ) {
+        return new WP_Error(
+            's_store_source_missing',
+            sprintf( 'مسیر افزونه %s داخل بسته دانلودی پیدا نشد.', esc_html( $p['name'] ?? $slug ) )
+        );
+    }
+
+    global $wp_filesystem;
+    $target = trailingslashit( $remote_source ) . $slug;
+
+    if ( trailingslashit( $nested ) === trailingslashit( $target ) ) return $nested;
+
+    if ( $wp_filesystem && $wp_filesystem->exists( $target ) ) {
+        $wp_filesystem->delete( $target, true );
+    }
+    if ( ! $wp_filesystem || ! $wp_filesystem->move( $nested, $target, true ) ) {
+        return new WP_Error( 's_store_source_move_failed', 'آماده‌سازی بسته افزونه برای نصب ناموفق بود.' );
+    }
+    return trailingslashit( $target );
+}
+add_filter( 'upgrader_source_selection', 's_store_upgrader_source_selection', 10, 4 );
 
 function s_store_plugin_slug_from_basename( $plugin_file ) {
     $folder = dirname( $plugin_file );
@@ -173,14 +211,16 @@ function s_store_dashboard_page() {
         echo '<p>' . esc_html( $p['description'] ?? '' ) . '</p>';
         echo '<div class="s-store-meta"><span>نسخه ' . esc_html( $p['version'] ?? '-' ) . '</span><code>' . esc_html( $slug ) . '</code></div>';
         echo '<div class="s-store-actions">';
-        if ( ! $local && ! empty( $p['download_url'] ) ) {
+        if ( ! $local && ! empty( $p['available'] ) && ! empty( $p['download_url'] ) ) {
             $url = wp_nonce_url( admin_url( 'admin-post.php?action=s_store_install&slug=' . rawurlencode( $slug ) ), 's_store_install_' . $slug );
             echo '<a class="button button-primary" href="' . esc_url( $url ) . '">نصب</a>';
         } elseif ( $local && ! $local['active'] ) {
             $url = wp_nonce_url( admin_url( 'admin-post.php?action=s_store_activate&plugin=' . rawurlencode( $local['file'] ) ), 's_store_activate_' . $local['file'] );
             echo '<a class="button button-primary" href="' . esc_url( $url ) . '">فعال‌سازی</a>';
-        } else {
+        } elseif ( $local ) {
             echo '<span class="button disabled">فعال</span>';
+        } else {
+            echo '<span class="button disabled">به‌زودی</span>';
         }
         if ( ! empty( $p['homepage'] ) ) echo '<a class="button" target="_blank" rel="noopener" href="' . esc_url( $p['homepage'] ) . '">GitHub</a>';
         echo '</div></article>';
@@ -235,14 +275,16 @@ add_action( 'admin_post_s_store_install', function() {
     $slug = isset( $_GET['slug'] ) ? sanitize_key( wp_unslash( $_GET['slug'] ) ) : '';
     check_admin_referer( 's_store_install_' . $slug );
     $p = s_store_plugin_by_slug( $slug );
-    if ( ! $p || empty( $p['download_url'] ) ) wp_die( 'بسته نصب برای این افزونه پیدا نشد.' );
+    if ( ! $p || empty( $p['available'] ) || empty( $p['download_url'] ) ) wp_die( 'این افزونه هنوز بسته نصب آماده ندارد.' );
 
     require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
     require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
     require_once ABSPATH . 'wp-admin/includes/file.php';
     $skin = new Automatic_Upgrader_Skin();
     $upgrader = new Plugin_Upgrader( $skin );
+    $GLOBALS['s_store_install_slug'] = $slug;
     $result = $upgrader->install( esc_url_raw( $p['download_url'] ) );
+    unset( $GLOBALS['s_store_install_slug'] );
     if ( is_wp_error( $result ) || ! $result ) wp_die( 'نصب افزونه ناموفق بود.' );
     wp_safe_redirect( admin_url( 'admin.php?page=s-store-installed' ) );
     exit;
