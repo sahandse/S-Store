@@ -3,7 +3,7 @@
  * Plugin Name: فروشگاه افزونه اس
  * Plugin URI: https://github.com/sahandse/S-Store
  * Description: فروشگاه و بروزرسان مرکزی افزونه‌های اختصاصی سهند رضوان با نصب، بروزرسانی، جزئیات افزونه و منوی یکپارچه.
- * Version: 1.8.0
+ * Version: 1.9.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Sahand Rezvan
@@ -13,7 +13,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'S_STORE_VERSION', '1.8.0' );
+define( 'S_STORE_VERSION', '1.9.0' );
 define( 'S_STORE_FILE', __FILE__ );
 define( 'S_STORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'S_STORE_URL', plugin_dir_url( __FILE__ ) );
@@ -219,7 +219,7 @@ add_filter( 'plugins_api', function( $result, $action, $args ) {
 
 function s_store_managed_page_slugs() {
     $slugs = [
-        's-store','s-store-all','s-store-installed','s-store-updates','s-store-settings','s-store-about',
+        's-store','s-store-all','s-store-installed','s-store-updates','s-store-health','s-store-settings','s-store-about',
         'appointment-booking-pro','cardyar','cash-installment-price','delivery-calendar','gheymatbar',
         'login-sms-bale','lucky-wheel-pro','media-optimizer','price-compare-assistant','product-video-reels',
         'wc-market-sync','woo-cashback-wallet','woo-mobile-app-shell','woocommerce-sms-orders',
@@ -393,6 +393,7 @@ add_action( 'admin_menu', function() {
     add_submenu_page( 's-store', 'همه افزونه‌ها', 'همه افزونه‌ها', 'manage_options', 's-store-all', 's_store_all_page' );
     add_submenu_page( 's-store', 'افزونه‌های نصب‌شده', 'نصب‌شده‌ها', 'manage_options', 's-store-installed', 's_store_installed_page' );
     add_submenu_page( 's-store', 'بروزرسانی‌ها', 'بروزرسانی‌ها', 'update_plugins', 's-store-updates', 's_store_updates_page' );
+    add_submenu_page( 's-store', 'مرکز سلامت', 'مرکز سلامت', 'manage_options', 's-store-health', 's_store_health_center_page' );
     add_submenu_page( 's-store', 'تنظیمات', 'تنظیمات', 'manage_options', 's-store-settings', 's_store_settings_page' );
     add_submenu_page( 's-store', 'درباره', 'درباره', 'manage_options', 's-store-about', 's_store_about_page' );
     do_action( 's_store_admin_menu' );
@@ -427,6 +428,266 @@ function s_store_stats( $plugins, $installed ) {
         if ( ! empty( $p['version'] ) && version_compare( $installed[ $slug ]['version'], $p['version'], '<' ) ) $stats['updates']++;
     }
     return $stats;
+}
+
+function s_store_health_status_rank( $status ) {
+    $map = [ 'ok' => 0, 'info' => 1, 'off' => 1, 'warn' => 2, 'error' => 3 ];
+    return $map[ $status ] ?? 1;
+}
+
+function s_store_health_add_check( &$checks, $status, $title, $detail, $group = 'general' ) {
+    $checks[] = [
+        'status' => $status,
+        'title'  => $title,
+        'detail' => $detail,
+        'group'  => $group,
+    ];
+}
+
+function s_store_health_recent_error( $slug, $days = 7 ) {
+    $logs = s_store_activity_for_plugin( $slug, 30 );
+    $min  = current_time( 'timestamp' ) - ( $days * DAY_IN_SECONDS );
+    foreach ( $logs as $row ) {
+        if ( ( $row['status'] ?? '' ) !== 'error' ) continue;
+        if ( ! empty( $row['time'] ) && (int) $row['time'] >= $min ) return $row;
+    }
+    return null;
+}
+
+function s_store_health_check_plugin( $p, $installed ) {
+    $slug   = sanitize_key( $p['slug'] ?? '' );
+    $local  = $installed[ $slug ] ?? null;
+    $checks = [];
+
+    if ( ! $local ) {
+        s_store_health_add_check( $checks, 'off', 'وضعیت نصب', 'این افزونه روی سایت نصب نشده است.', 'install' );
+        return [
+            'slug'    => $slug,
+            'name'    => $p['name'] ?? $slug,
+            'status'  => 'off',
+            'checks'  => $checks,
+            'local'   => null,
+            'plugin'  => $p,
+        ];
+    }
+
+    if ( ! empty( $local['active'] ) ) {
+        s_store_health_add_check( $checks, 'ok', 'وضعیت افزونه', 'افزونه فعال است.', 'install' );
+    } else {
+        s_store_health_add_check( $checks, 'warn', 'وضعیت افزونه', 'افزونه نصب شده اما غیرفعال است.', 'install' );
+    }
+
+    if ( ! empty( $p['version'] ) && version_compare( $local['version'], $p['version'], '<' ) ) {
+        s_store_health_add_check( $checks, 'warn', 'نسخه قدیمی', 'نسخه ' . $local['version'] . ' نصب است و نسخه ' . $p['version'] . ' موجود است.', 'version' );
+    } else {
+        s_store_health_add_check( $checks, 'ok', 'نسخه افزونه', 'نسخه نصب‌شده بروز است.', 'version' );
+    }
+
+    $required_php = $p['requires_php'] ?? '';
+    if ( $required_php ) {
+        if ( version_compare( PHP_VERSION, $required_php, '<' ) ) {
+            s_store_health_add_check( $checks, 'error', 'نسخه PHP', 'PHP ' . PHP_VERSION . ' نصب است؛ حداقل ' . $required_php . ' لازم است.', 'compatibility' );
+        } else {
+            s_store_health_add_check( $checks, 'ok', 'نسخه PHP', 'PHP ' . PHP_VERSION . ' سازگار است.', 'compatibility' );
+        }
+    }
+
+    $required_wp = $p['requires'] ?? '';
+    if ( $required_wp ) {
+        $wp_version = get_bloginfo( 'version' );
+        if ( version_compare( $wp_version, $required_wp, '<' ) ) {
+            s_store_health_add_check( $checks, 'error', 'نسخه WordPress', 'WordPress ' . $wp_version . ' نصب است؛ حداقل ' . $required_wp . ' لازم است.', 'compatibility' );
+        } else {
+            s_store_health_add_check( $checks, 'ok', 'نسخه WordPress', 'WordPress ' . $wp_version . ' سازگار است.', 'compatibility' );
+        }
+    }
+
+    $woocommerce_slugs = [
+        'cash-installment-price','delivery-calendar','price-compare-assistant','product-video-reels',
+        'wc-market-sync','woo-cashback-wallet','woo-mobile-app-shell','woocommerce-sms-orders',
+        'smart-delivery-for-woocommerce'
+    ];
+    if ( in_array( $slug, $woocommerce_slugs, true ) && ! empty( $local['active'] ) ) {
+        if ( class_exists( 'WooCommerce' ) ) {
+            s_store_health_add_check( $checks, 'ok', 'WooCommerce', 'وابستگی WooCommerce فعال است.', 'dependency' );
+        } else {
+            s_store_health_add_check( $checks, 'error', 'WooCommerce', 'این افزونه فعال است اما WooCommerce در دسترس نیست.', 'dependency' );
+        }
+    }
+
+    $presence = s_store_option_presence( $slug );
+    if ( $presence['groups'] > 0 ) {
+        s_store_health_add_check( $checks, 'ok', 'تنظیمات افزونه', sprintf( '%d گروه تنظیمات و %d مقدار قابل تشخیص ذخیره شده است.', $presence['groups'], $presence['items'] ), 'settings' );
+    } else {
+        s_store_health_add_check( $checks, 'info', 'تنظیمات افزونه', 'هنوز تنظیمات قابل تشخیص برای این افزونه ذخیره نشده است.', 'settings' );
+    }
+
+    if ( 'login-sms-bale' === $slug ) {
+        $s = (array) get_option( 'lsb_settings', [] );
+        if ( ( $s['enabled_sms'] ?? 'no' ) === 'yes' ) {
+            if ( empty( $s['sms_provider'] ) || 'none' === $s['sms_provider'] ) {
+                s_store_health_add_check( $checks, 'error', 'ورود پیامکی', 'ارسال SMS فعال است اما Provider انتخاب نشده است.', 'service' );
+            } else {
+                s_store_health_add_check( $checks, 'ok', 'Provider پیامک', 'Provider انتخاب‌شده: ' . sanitize_text_field( $s['sms_provider'] ), 'service' );
+            }
+        }
+        if ( ( $s['enabled_bale'] ?? 'no' ) === 'yes' ) {
+            if ( empty( $s['bale_bot_token'] ) ) {
+                s_store_health_add_check( $checks, 'error', 'بله', 'ورود با بله فعال است اما توکن ربات وارد نشده است.', 'service' );
+            } else {
+                s_store_health_add_check( $checks, 'ok', 'بله', 'توکن ربات بله ثبت شده است.', 'service' );
+            }
+        }
+    }
+
+    if ( 'woocommerce-sms-orders' === $slug ) {
+        $s = (array) get_option( 'wso_settings', [] );
+        $sending = ( $s['send_to_customer'] ?? 'no' ) === 'yes' || ( $s['send_to_admin'] ?? 'no' ) === 'yes';
+        if ( $sending ) {
+            if ( empty( $s['provider'] ) || 'none' === $s['provider'] ) {
+                s_store_health_add_check( $checks, 'error', 'پیامک سفارشات', 'ارسال پیامک فعال است اما Provider انتخاب نشده است.', 'service' );
+            } else {
+                $has_credentials = ! empty( $s['api_key'] ) || ! empty( $s['username'] ) || ! empty( $s['password'] );
+                s_store_health_add_check(
+                    $checks,
+                    $has_credentials ? 'ok' : 'warn',
+                    'تنظیمات پنل پیامک',
+                    $has_credentials ? 'اطلاعات اتصال برای Provider ثبت شده است.' : 'Provider انتخاب شده اما Credential قابل تشخیص وارد نشده است.',
+                    'service'
+                );
+            }
+        }
+    }
+
+    if ( 'wc-market-sync' === $slug ) {
+        $s = (array) get_option( 'wcms_settings', [] );
+        if ( ( $s['enabled_basalam'] ?? 'no' ) === 'yes' ) {
+            s_store_health_add_check( $checks, empty( $s['basalam_token'] ) ? 'error' : 'ok', 'باسلام', empty( $s['basalam_token'] ) ? 'همگام‌سازی باسلام فعال است اما Token ثبت نشده است.' : 'Token باسلام ثبت شده است.', 'service' );
+        }
+        if ( ( $s['enabled_torob'] ?? 'no' ) === 'yes' ) {
+            s_store_health_add_check( $checks, empty( $s['torob_key'] ) ? 'error' : 'ok', 'ترب', empty( $s['torob_key'] ) ? 'همگام‌سازی ترب فعال است اما Key ثبت نشده است.' : 'Key ترب ثبت شده است.', 'service' );
+        }
+    }
+
+    if ( 'support-button' === $slug ) {
+        $s = (array) get_option( 'sb_settings', [] );
+        if ( ! empty( $s['bale_enabled'] ) ) {
+            s_store_health_add_check( $checks, empty( $s['bale_bot_token'] ) ? 'error' : 'ok', 'اتصال بله', empty( $s['bale_bot_token'] ) ? 'اتصال بله فعال است اما Bot Token ثبت نشده است.' : 'Bot Token بله ثبت شده است.', 'service' );
+        }
+        if ( ! empty( $local['active'] ) ) {
+            s_store_health_add_check( $checks, wp_next_scheduled( 'sb_cleanup_event' ) ? 'ok' : 'warn', 'Cron پاکسازی', wp_next_scheduled( 'sb_cleanup_event' ) ? 'Cron روزانه پاکسازی زمان‌بندی شده است.' : 'رویداد sb_cleanup_event زمان‌بندی نشده است.', 'cron' );
+        }
+    }
+
+    if ( 'smart-seo-ai-pro' === $slug && ! empty( $local['active'] ) ) {
+        $ai = (array) get_option( 'smart_seo_ai_settings', [] );
+        if ( ! empty( $ai['enable_ai_engine'] ) ) {
+            s_store_health_add_check( $checks, empty( $ai['ai_api_key'] ) ? 'warn' : 'ok', 'AI API', empty( $ai['ai_api_key'] ) ? 'موتور AI فعال است اما API Key ثبت نشده است.' : 'API Key موتور AI ثبت شده است.', 'service' );
+        }
+        s_store_health_add_check( $checks, wp_next_scheduled( 'smart_seo_ai_daily_scan_cron' ) ? 'ok' : 'warn', 'Cron اسکن روزانه', wp_next_scheduled( 'smart_seo_ai_daily_scan_cron' ) ? 'اسکن روزانه زمان‌بندی شده است.' : 'Cron اسکن روزانه پیدا نشد.', 'cron' );
+    }
+
+    if ( 'media-optimizer' === $slug ) {
+        $s = (array) get_option( 'mo_settings', [] );
+        if ( ( $s['scheduled'] ?? 'no' ) === 'yes' && defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
+            s_store_health_add_check( $checks, 'warn', 'WP-Cron', 'بهینه‌سازی زمان‌بندی‌شده فعال است اما WP-Cron غیرفعال شده است.', 'cron' );
+        }
+    }
+
+    $recent_error = s_store_health_recent_error( $slug );
+    if ( $recent_error ) {
+        s_store_health_add_check( $checks, 'error', 'خطای اخیر S Store', $recent_error['message'] ?: 'یک خطای اخیر برای این افزونه ثبت شده است.', 'error' );
+    }
+
+    $status = 'ok';
+    foreach ( $checks as $check ) {
+        if ( s_store_health_status_rank( $check['status'] ) > s_store_health_status_rank( $status ) ) {
+            $status = $check['status'];
+        }
+    }
+
+    return [
+        'slug'    => $slug,
+        'name'    => $p['name'] ?? $slug,
+        'status'  => $status,
+        'checks'  => $checks,
+        'local'   => $local,
+        'plugin'  => $p,
+    ];
+}
+
+function s_store_health_report() {
+    $installed = s_store_installed_map();
+    $items = [];
+    foreach ( s_store_manifest_plugins() as $p ) {
+        if ( empty( $p['slug'] ) || 's-store' === $p['slug'] ) continue;
+        $items[] = s_store_health_check_plugin( $p, $installed );
+    }
+    return $items;
+}
+
+function s_store_health_summary( $report = null ) {
+    $report = is_array( $report ) ? $report : s_store_health_report();
+    $summary = [ 'ok' => 0, 'warn' => 0, 'error' => 0, 'off' => 0, 'info' => 0 ];
+    foreach ( $report as $item ) {
+        $status = $item['status'] ?? 'info';
+        if ( ! isset( $summary[ $status ] ) ) $status = 'info';
+        $summary[ $status ]++;
+    }
+    return $summary;
+}
+
+function s_store_health_center_page() {
+    $report  = s_store_health_report();
+    $summary = s_store_health_summary( $report );
+
+    s_store_admin_shell_start( 'مرکز سلامت S Store', 'بررسی یکپارچه وضعیت افزونه‌ها، وابستگی‌ها، نسخه‌ها، Cron، APIها و خطاهای اخیر.' );
+
+    echo '<section class="s-store-health-hero">';
+    echo '<div><span class="dashicons dashicons-heart"></span><div><h2>Health Center</h2><p>این صفحه فقط از داده‌های واقعی همین وردپرس استفاده می‌کند.</p></div></div>';
+    echo '<a class="s-store-btn ghost" href="' . esc_url( admin_url( 'admin.php?page=s-store-health' ) ) . '"><span class="dashicons dashicons-update"></span>بررسی دوباره</a>';
+    echo '</section>';
+
+    echo '<section class="s-store-health-summary">';
+    $cards = [
+        [ 'سالم', $summary['ok'], 'ok', 'yes-alt' ],
+        [ 'نیازمند توجه', $summary['warn'], 'warn', 'warning' ],
+        [ 'خطا', $summary['error'], 'error', 'dismiss' ],
+        [ 'نصب‌نشده', $summary['off'], 'off', 'minus' ],
+    ];
+    foreach ( $cards as $card ) {
+        echo '<div class="s-store-health-stat ' . esc_attr( $card[2] ) . '"><span class="dashicons dashicons-' . esc_attr( $card[3] ) . '"></span><div><small>' . esc_html( $card[0] ) . '</small><strong>' . esc_html( $card[1] ) . '</strong></div></div>';
+    }
+    echo '</section>';
+
+    $global_cron = ! ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON );
+    echo '<section class="s-store-global-health">';
+    echo '<div class="' . ( $global_cron ? 'ok' : 'warn' ) . '"><span class="dashicons dashicons-clock"></span><strong>WP-Cron</strong><small>' . ( $global_cron ? 'فعال' : 'غیرفعال' ) . '</small></div>';
+    echo '<div class="ok"><span class="dashicons dashicons-wordpress"></span><strong>WordPress</strong><small>' . esc_html( get_bloginfo( 'version' ) ) . '</small></div>';
+    echo '<div class="ok"><span class="dashicons dashicons-editor-code"></span><strong>PHP</strong><small>' . esc_html( PHP_VERSION ) . '</small></div>';
+    echo '<div class="' . ( class_exists( 'WooCommerce' ) ? 'ok' : 'info' ) . '"><span class="dashicons dashicons-cart"></span><strong>WooCommerce</strong><small>' . ( class_exists( 'WooCommerce' ) ? esc_html( defined( 'WC_VERSION' ) ? WC_VERSION : 'فعال' ) : 'غیرفعال' ) . '</small></div>';
+    echo '</section>';
+
+    echo '<div class="s-store-health-list">';
+    foreach ( $report as $item ) {
+        $status = $item['status'] ?? 'info';
+        $slug   = $item['slug'];
+        echo '<article class="s-store-health-plugin ' . esc_attr( $status ) . '">';
+        echo '<div class="s-store-health-plugin-head">';
+        s_store_render_plugin_icon( $slug );
+        echo '<div><h3>' . esc_html( $item['name'] ) . '</h3><span>' . esc_html( $slug ) . '</span></div>';
+        echo '<span class="s-store-health-pill ' . esc_attr( $status ) . '">' . esc_html( [ 'ok'=>'سالم','warn'=>'نیازمند توجه','error'=>'خطا','off'=>'نصب‌نشده','info'=>'اطلاعات' ][ $status ] ?? 'اطلاعات' ) . '</span>';
+        echo '<a class="s-store-btn ghost" href="' . esc_url( add_query_arg( [ 'page'=>'s-store','view'=>'plugin','slug'=>$slug ], admin_url( 'admin.php' ) ) ) . '">جزئیات</a>';
+        echo '</div><div class="s-store-health-checks">';
+
+        foreach ( $item['checks'] as $check ) {
+            echo '<div class="s-store-health-check ' . esc_attr( $check['status'] ) . '"><i></i><div><strong>' . esc_html( $check['title'] ) . '</strong><small>' . esc_html( $check['detail'] ) . '</small></div></div>';
+        }
+        echo '</div></article>';
+    }
+    echo '</div>';
+
+    s_store_admin_shell_end();
 }
 
 function s_store_action_button( $p, $local, $compact = false ) {
@@ -507,6 +768,24 @@ function s_store_dashboard_page() {
     foreach ( $cards as $c ) {
         echo '<div class="s-store-stat ' . esc_attr( $c[3] ) . '"><span class="dashicons dashicons-' . esc_attr( $c[2] ) . '"></span><div><small>' . esc_html( $c[0] ) . '</small><strong>' . esc_html( $c[1] ) . '</strong><i><b style="width:' . esc_attr( min( 100, max( 18, $c[1] * 4 ) ) ) . '%"></b></i></div></div>';
     }
+    echo '</section>';
+
+    $health_report = s_store_health_report();
+    $health_summary = s_store_health_summary( $health_report );
+    $health_state = $health_summary['error'] ? 'error' : ( $health_summary['warn'] ? 'warn' : 'ok' );
+    echo '<section class="s-store-health-banner ' . esc_attr( $health_state ) . '">';
+    echo '<div class="s-store-health-banner-icon"><span class="dashicons dashicons-heart"></span></div>';
+    echo '<div class="s-store-health-banner-copy"><small>HEALTH CENTER</small><h2>سلامت مجموعه افزونه‌ها</h2><p>';
+    if ( $health_summary['error'] ) {
+        echo esc_html( $health_summary['error'] ) . ' افزونه دارای خطا و ' . esc_html( $health_summary['warn'] ) . ' مورد نیازمند توجه است.';
+    } elseif ( $health_summary['warn'] ) {
+        echo esc_html( $health_summary['warn'] ) . ' افزونه نیازمند بررسی است و خطای بحرانی ثبت نشده.';
+    } else {
+        echo 'افزونه‌های نصب‌شده بدون خطای شناسایی‌شده کار می‌کنند.';
+    }
+    echo '</p></div>';
+    echo '<div class="s-store-health-banner-counts"><span class="ok">' . esc_html( $health_summary['ok'] ) . ' سالم</span><span class="warn">' . esc_html( $health_summary['warn'] ) . ' هشدار</span><span class="error">' . esc_html( $health_summary['error'] ) . ' خطا</span></div>';
+    echo '<a class="s-store-btn primary" href="' . esc_url( admin_url( 'admin.php?page=s-store-health' ) ) . '">باز کردن مرکز سلامت</a>';
     echo '</section>';
 
     echo '<section class="s-store-section"><div class="s-store-section-head"><div><span class="dashicons dashicons-star-filled"></span><h2>افزونه‌های پیشنهادی</h2></div><a href="' . esc_url( admin_url( 'admin.php?page=s-store-all' ) ) . '">مشاهده همه</a></div><div class="s-store-plugin-grid">';
