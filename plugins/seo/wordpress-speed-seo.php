@@ -3,7 +3,7 @@
  * Plugin Name: WordPress Speed & SEO Optimizer
  * Plugin URI:  https://github.com/sahandse/seo
  * Description: افزونه جامع بهینه‌سازی سرعت و سئو وردپرس با پنل مدیریت کامل
- * Version:     3.0.0
+ * Version:     3.1.1
  * Author:      Speed SEO Team
  * License:     GPL v2 or later
  * Text Domain: wp-speed-seo
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'WSS_VERSION',     '3.0.0' );
+define( 'WSS_VERSION',     '3.1.1' );
 define( 'WSS_PLUGIN_DIR',  plugin_dir_path( __FILE__ ) );
 define( 'WSS_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );
 define( 'WSS_PLUGIN_FILE', __FILE__ );
