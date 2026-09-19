@@ -5,15 +5,15 @@
     {
       "slug": "s-store",
       "name": "فروشگاه افزونه اس",
-      "version": "2.3.0",
+      "version": "2.4.0",
       "description": "ابزار مدیریت و بروزرسانی مرکزی افزونه‌ها",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/s-store",
-      "download_url": "https://github.com/sahandse/S-Store/releases/download/s-store-v2.3.0/s-store.zip",
+      "download_url": "https://github.com/sahandse/S-Store/releases/download/s-store-v2.4.0/s-store.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "صفحه مرکزی «صفحات افزونه‌ها» برای نمایش گروه‌بندی‌شده همه افزونه‌های فعال و منو/زیرصفحه‌های واقعی آن‌ها، به‌همراه لینک مستقیم از نصب‌شده‌ها.",
+      "changelog": "AJAX کامل برای نصب، فعال‌سازی و بروزرسانی افزونه‌ها بدون رفرش صفحه؛ Progress داخل همان دکمه، وضعیت موفق/خطا و بروزرسانی Self Update خود S Store.",
       "available": true
     },
     {
