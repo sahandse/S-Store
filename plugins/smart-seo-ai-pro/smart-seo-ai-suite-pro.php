@@ -3,7 +3,7 @@
  * Plugin Name: Smart SEO AI Suite Pro
  * Plugin URI: https://smartseoai.pro
  * Description: Enterprise All-in-One SEO Engine, AI Content Generator, WooCommerce Optimizer, Security Scanner, Performance Profiler, and Auto-Fix Suite for WordPress.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Smart SEO AI Suite Team
  * Author URI: https://smartseoai.pro
  * Text Domain: smart-seo-ai-suite-pro
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define Plugin Constants
-define( 'SMART_SEO_AI_VERSION', '1.0.0' );
+define( 'SMART_SEO_AI_VERSION', '1.0.1' );
 define( 'SMART_SEO_AI_FILE', __FILE__ );
 define( 'SMART_SEO_AI_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SMART_SEO_AI_URL', plugin_dir_url( __FILE__ ) );
