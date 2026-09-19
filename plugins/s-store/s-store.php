@@ -3,7 +3,7 @@
  * Plugin Name: فروشگاه افزونه اس
  * Plugin URI: https://github.com/sahandse/S-Store
  * Description: فروشگاه و بروزرسان مرکزی افزونه‌های اختصاصی سهند رضوان با نصب، بروزرسانی، جزئیات افزونه و منوی یکپارچه.
- * Version: 1.7.0
+ * Version: 1.8.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Sahand Rezvan
@@ -13,7 +13,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'S_STORE_VERSION', '1.7.0' );
+define( 'S_STORE_VERSION', '1.8.0' );
 define( 'S_STORE_FILE', __FILE__ );
 define( 'S_STORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'S_STORE_URL', plugin_dir_url( __FILE__ ) );
@@ -557,6 +557,279 @@ function s_store_all_page() {
     s_store_admin_shell_end();
 }
 
+function s_store_activity_log( $slug, $action, $status = 'success', $message = '' ) {
+    $slug = sanitize_key( $slug );
+    $action = sanitize_key( $action );
+    $status = in_array( $status, [ 'success', 'warning', 'error', 'info' ], true ) ? $status : 'info';
+    $logs = get_option( 's_store_activity_log', [] );
+    if ( ! is_array( $logs ) ) $logs = [];
+    array_unshift( $logs, [
+        'slug'    => $slug,
+        'action'  => $action,
+        'status'  => $status,
+        'message' => sanitize_text_field( $message ),
+        'time'    => current_time( 'timestamp' ),
+        'user'    => get_current_user_id(),
+    ] );
+    update_option( 's_store_activity_log', array_slice( $logs, 0, 120 ), false );
+}
+
+function s_store_activity_for_plugin( $slug, $limit = 6 ) {
+    $logs = get_option( 's_store_activity_log', [] );
+    if ( ! is_array( $logs ) ) return [];
+    $out = [];
+    foreach ( $logs as $row ) {
+        if ( empty( $row['slug'] ) || $row['slug'] !== $slug ) continue;
+        $out[] = $row;
+        if ( count( $out ) >= $limit ) break;
+    }
+    return $out;
+}
+
+function s_store_option_presence( $slug ) {
+    $map = [
+        'appointment-booking-pro'        => [ 'abp_settings' ],
+        'cardyar'                        => [ 'cardyar_settings' ],
+        'cash-installment-price'         => [ 'cip_settings' ],
+        'delivery-calendar'              => [ 'dc_settings', 'delivery_calendar_settings' ],
+        'gheymatbar'                     => [ 'gheymatbar_settings', 'gb_settings' ],
+        'login-sms-bale'                 => [ 'lsb_settings', 'login_sms_bale_settings' ],
+        'lucky-wheel-pro'                => [ 'lwp_settings' ],
+        'media-optimizer'                => [ 'mo_settings' ],
+        'price-compare-assistant'        => [ 'pca_settings' ],
+        'product-video-reels'            => [ 'pvr_settings' ],
+        'wc-market-sync'                 => [ 'wcms_settings' ],
+        'woo-cashback-wallet'            => [ 'wcw_settings', 'woo_cashback_wallet_settings' ],
+        'woo-mobile-app-shell'           => [ 'wmas_settings' ],
+        'woocommerce-sms-orders'         => [ 'wso_settings', 'woocommerce_sms_orders_settings' ],
+        'smart-delivery-for-woocommerce' => [ 'sdw_settings', 'smart_delivery_settings' ],
+        'support-button'                 => [ 'sb_settings' ],
+        'domarhaleii'                    => [ 's2fa_settings' ],
+        'seo'                            => [ 'wss_speed', 'wss_seo', 'wss_schema' ],
+        'smart-seo-ai-pro'               => [ 'smart_seo_ai_settings' ],
+    ];
+
+    $keys = $map[ $slug ] ?? [];
+    $found = 0;
+    $items = 0;
+    foreach ( $keys as $key ) {
+        $value = get_option( $key, null );
+        if ( null === $value ) continue;
+        $found++;
+        if ( is_array( $value ) ) $items += count( $value );
+        elseif ( '' !== $value ) $items++;
+    }
+    return [ 'groups' => $found, 'items' => $items ];
+}
+
+function s_store_plugin_services( $slug, $local ) {
+    $services = [];
+
+    $services[] = [
+        'label'  => 'هسته افزونه',
+        'status' => $local && ! empty( $local['active'] ) ? 'ok' : ( $local ? 'warn' : 'off' ),
+        'text'   => $local && ! empty( $local['active'] ) ? 'فعال و در حال اجرا' : ( $local ? 'نصب‌شده اما غیرفعال' : 'نصب نشده' ),
+    ];
+
+    $woocommerce_slugs = [
+        'cash-installment-price','delivery-calendar','price-compare-assistant','product-video-reels',
+        'wc-market-sync','woo-cashback-wallet','woo-mobile-app-shell','woocommerce-sms-orders',
+        'smart-delivery-for-woocommerce'
+    ];
+    if ( in_array( $slug, $woocommerce_slugs, true ) ) {
+        $woo = class_exists( 'WooCommerce' );
+        $services[] = [
+            'label'  => 'WooCommerce',
+            'status' => $woo ? 'ok' : 'error',
+            'text'   => $woo ? 'در دسترس' : 'وابستگی پیدا نشد',
+        ];
+    }
+
+    if ( in_array( $slug, [ 'login-sms-bale','woocommerce-sms-orders','appointment-booking-pro','support-button' ], true ) ) {
+        $services[] = [
+            'label'  => 'سرویس ارتباطی',
+            'status' => 'info',
+            'text'   => 'وضعیت از تنظیمات افزونه خوانده می‌شود',
+        ];
+    }
+
+    $presence = s_store_option_presence( $slug );
+    $services[] = [
+        'label'  => 'تنظیمات ذخیره‌شده',
+        'status' => $presence['groups'] > 0 ? 'ok' : 'info',
+        'text'   => $presence['groups'] > 0
+            ? sprintf( '%d گروه / %d مقدار', $presence['groups'], $presence['items'] )
+            : 'هنوز تنظیمات قابل تشخیص ذخیره نشده',
+    ];
+
+    return apply_filters( 's_store_plugin_services', $services, $slug, $local );
+}
+
+function s_store_plugin_real_metrics( $slug, $p, $local ) {
+    global $wpdb;
+
+    $presence = s_store_option_presence( $slug );
+    $metrics = [
+        [
+            'label' => 'نسخه نصب‌شده',
+            'value' => $local ? ( $local['version'] ?: '—' ) : '—',
+            'hint'  => $local ? 'روی این سایت' : 'نصب نشده',
+            'icon'  => 'archive',
+        ],
+        [
+            'label' => 'نسخه جدید',
+            'value' => $p['version'] ?? '—',
+            'hint'  => ( $local && ! empty( $p['version'] ) && version_compare( $local['version'], $p['version'], '<' ) ) ? 'آپدیت موجود' : 'آخرین نسخه',
+            'icon'  => 'update',
+        ],
+        [
+            'label' => 'تنظیمات',
+            'value' => (string) $presence['items'],
+            'hint'  => $presence['groups'] ? 'مقدار ذخیره‌شده' : 'داده قابل تشخیص',
+            'icon'  => 'admin-generic',
+        ],
+    ];
+
+    if ( 'cardyar' === $slug && post_type_exists( 'cardyar_payment' ) ) {
+        $counts = wp_count_posts( 'cardyar_payment' );
+        $total = 0;
+        if ( is_object( $counts ) ) {
+            foreach ( get_object_vars( $counts ) as $count ) $total += (int) $count;
+        }
+        $metrics[] = [
+            'label' => 'پرداخت‌ها',
+            'value' => number_format_i18n( $total ),
+            'hint'  => 'رکورد واقعی کارت‌یار',
+            'icon'  => 'money-alt',
+        ];
+    } elseif ( 'media-optimizer' === $slug ) {
+        $pending = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = '_mo_optimizer_pending'" );
+        $metrics[] = [
+            'label' => 'صف بهینه‌سازی',
+            'value' => number_format_i18n( $pending ),
+            'hint'  => 'تصویر در انتظار پردازش',
+            'icon'  => 'format-image',
+        ];
+    } elseif ( 'woo-cashback-wallet' === $slug ) {
+        $wallet_rows = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->usermeta} WHERE meta_key LIKE '%wallet%balance%'" );
+        $metrics[] = [
+            'label' => 'کیف پول‌ها',
+            'value' => number_format_i18n( $wallet_rows ),
+            'hint'  => 'رکورد موجودی ثبت‌شده',
+            'icon'  => 'money',
+        ];
+    } elseif ( 'woocommerce-sms-orders' === $slug ) {
+        $log = get_option( 'wso_logs', get_option( 'woocommerce_sms_orders_logs', [] ) );
+        $metrics[] = [
+            'label' => 'لاگ پیامک',
+            'value' => is_array( $log ) ? number_format_i18n( count( $log ) ) : '0',
+            'hint'  => 'رکورد ذخیره‌شده',
+            'icon'  => 'email-alt',
+        ];
+    } elseif ( 'lucky-wheel-pro' === $slug ) {
+        $settings = get_option( 'lwp_settings', [] );
+        $prizes = is_array( $settings ) && ! empty( $settings['prizes'] ) && is_array( $settings['prizes'] ) ? count( $settings['prizes'] ) : 0;
+        $metrics[] = [
+            'label' => 'جوایز',
+            'value' => number_format_i18n( $prizes ),
+            'hint'  => 'جایزه تعریف‌شده',
+            'icon'  => 'tickets-alt',
+        ];
+    } else {
+        $logs = s_store_activity_for_plugin( $slug, 50 );
+        $metrics[] = [
+            'label' => 'عملیات ثبت‌شده',
+            'value' => number_format_i18n( count( $logs ) ),
+            'hint'  => 'در Activity Log',
+            'icon'  => 'list-view',
+        ];
+    }
+
+    return apply_filters( 's_store_plugin_metrics', $metrics, $slug, $p, $local );
+}
+
+function s_store_plugin_quick_actions( $slug, $p, $local ) {
+    $actions = [];
+    if ( $local && ! empty( $local['active'] ) ) {
+        $actions[] = [
+            'label' => 'تنظیمات',
+            'icon'  => 'admin-generic',
+            'url'   => admin_url( 'admin.php?page=' . $slug ),
+            'class' => 'primary',
+        ];
+    }
+    if ( $local && ! empty( $p['version'] ) && version_compare( $local['version'], $p['version'], '<' ) ) {
+        $actions[] = [
+            'label' => 'بروزرسانی',
+            'icon'  => 'update',
+            'url'   => wp_nonce_url( admin_url( 'admin-post.php?action=s_store_update&slug=' . rawurlencode( $slug ) ), 's_store_update_' . $slug ),
+            'class' => 'primary',
+        ];
+    }
+    if ( ! $local && ! empty( $p['available'] ) && ! empty( $p['download_url'] ) ) {
+        $actions[] = [
+            'label' => 'نصب',
+            'icon'  => 'download',
+            'url'   => wp_nonce_url( admin_url( 'admin-post.php?action=s_store_install&slug=' . rawurlencode( $slug ) ), 's_store_install_' . $slug ),
+            'class' => 'primary',
+        ];
+    }
+    if ( ! empty( $p['homepage'] ) ) {
+        $actions[] = [
+            'label' => 'GitHub',
+            'icon'  => 'external',
+            'url'   => $p['homepage'],
+            'class' => 'ghost',
+            'external' => true,
+        ];
+    }
+
+    return apply_filters( 's_store_plugin_quick_actions', $actions, $slug, $p, $local );
+}
+
+function s_store_render_plugin_dashboard( $slug, $p, $local ) {
+    $metrics  = s_store_plugin_real_metrics( $slug, $p, $local );
+    $services = s_store_plugin_services( $slug, $local );
+    $logs     = s_store_activity_for_plugin( $slug, 6 );
+    $actions  = s_store_plugin_quick_actions( $slug, $p, $local );
+
+    echo '<section class="s-store-plugin-dashboard" id="dashboard">';
+    echo '<div class="s-store-dashboard-head"><div><span class="dashicons dashicons-dashboard"></span><h3>داشبورد اختصاصی افزونه</h3></div><span>داده‌های واقعی همین سایت</span></div>';
+
+    echo '<div class="s-store-metric-grid">';
+    foreach ( $metrics as $metric ) {
+        echo '<article class="s-store-metric-card"><span class="dashicons dashicons-' . esc_attr( $metric['icon'] ?? 'chart-bar' ) . '"></span><div><small>' . esc_html( $metric['label'] ?? '' ) . '</small><strong>' . esc_html( $metric['value'] ?? '—' ) . '</strong><em>' . esc_html( $metric['hint'] ?? '' ) . '</em></div></article>';
+    }
+    echo '</div>';
+
+    echo '<div class="s-store-dashboard-grid">';
+    echo '<section class="s-store-panel"><div class="s-store-panel-title"><span class="dashicons dashicons-heart"></span><h3>وضعیت سرویس‌ها</h3></div><div class="s-store-service-list">';
+    foreach ( $services as $service ) {
+        $status = sanitize_key( $service['status'] ?? 'info' );
+        echo '<div class="s-store-service-row"><i class="' . esc_attr( $status ) . '"></i><div><strong>' . esc_html( $service['label'] ?? '' ) . '</strong><small>' . esc_html( $service['text'] ?? '' ) . '</small></div><span>' . esc_html( strtoupper( $status ) ) . '</span></div>';
+    }
+    echo '</div></section>';
+
+    echo '<section class="s-store-panel"><div class="s-store-panel-title"><span class="dashicons dashicons-controls-repeat"></span><h3>آخرین عملیات</h3></div><div class="s-store-activity-list">';
+    if ( ! $logs ) {
+        echo '<div class="s-store-activity-empty">هنوز عملیات S Store برای این افزونه ثبت نشده است.</div>';
+    } else {
+        foreach ( $logs as $row ) {
+            $time = ! empty( $row['time'] ) ? human_time_diff( (int) $row['time'], current_time( 'timestamp' ) ) . ' پیش' : '—';
+            echo '<div class="s-store-activity-row"><i class="' . esc_attr( $row['status'] ?? 'info' ) . '"></i><div><strong>' . esc_html( $row['message'] ?: $row['action'] ) . '</strong><small>' . esc_html( $time ) . '</small></div></div>';
+        }
+    }
+    echo '</div></section>';
+
+    echo '<section class="s-store-panel"><div class="s-store-panel-title"><span class="dashicons dashicons-performance"></span><h3>Quick Actions</h3></div><div class="s-store-quick-actions">';
+    foreach ( $actions as $action ) {
+        $external = ! empty( $action['external'] ) ? ' target="_blank" rel="noopener"' : '';
+        echo '<a class="s-store-quick-action ' . esc_attr( $action['class'] ?? 'ghost' ) . '" href="' . esc_url( $action['url'] ?? '#' ) . '"' . $external . '><span class="dashicons dashicons-' . esc_attr( $action['icon'] ?? 'admin-links' ) . '"></span><strong>' . esc_html( $action['label'] ?? '' ) . '</strong></a>';
+    }
+    echo '</div></section>';
+    echo '</div></section>';
+}
+
 function s_store_plugin_detail_page() {
     $slug = isset( $_GET['slug'] ) ? sanitize_key( wp_unslash( $_GET['slug'] ) ) : '';
     $p = s_store_plugin_by_slug( $slug );
@@ -585,7 +858,9 @@ function s_store_plugin_detail_page() {
     if ( ! empty( $p['homepage'] ) ) echo '<a class="s-store-btn ghost" target="_blank" rel="noopener" href="' . esc_url( $p['homepage'] ) . '"><span class="dashicons dashicons-external"></span>GitHub</a>';
     echo '</div></section>';
 
-    echo '<nav class="s-store-detail-tabs"><a class="is-active" href="#overview">نمای کلی</a><a href="#features">ویژگی‌ها</a><a href="#changelog">تغییرات نسخه</a><a href="#compatibility">سازگاری</a></nav>';
+    echo '<nav class="s-store-detail-tabs"><a class="is-active" href="#dashboard">داشبورد</a><a href="#overview">نمای کلی</a><a href="#features">ویژگی‌ها</a><a href="#changelog">تغییرات نسخه</a><a href="#compatibility">سازگاری</a></nav>';
+
+    s_store_render_plugin_dashboard( $slug, $p, $local );
 
     echo '<div class="s-store-detail-layout"><main>';
     echo '<section id="overview" class="s-store-panel rich"><div class="s-store-panel-title"><span class="dashicons dashicons-images-alt2"></span><h3>نمای افزونه</h3></div>';
