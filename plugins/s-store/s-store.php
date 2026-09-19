@@ -3,7 +3,7 @@
  * Plugin Name: فروشگاه افزونه اس
  * Plugin URI: https://github.com/sahandse/S-Store
  * Description: فروشگاه و بروزرسان مرکزی افزونه‌های اختصاصی سهند رضوان با نصب، بروزرسانی، جزئیات افزونه و منوی یکپارچه.
- * Version: 2.5.0
+ * Version: 2.6.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Sahand Rezvan
@@ -13,7 +13,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'S_STORE_VERSION', '2.5.0' );
+define( 'S_STORE_VERSION', '2.6.0' );
 define( 'S_STORE_FILE', __FILE__ );
 define( 'S_STORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'S_STORE_URL', plugin_dir_url( __FILE__ ) );
@@ -463,6 +463,62 @@ add_action( 'admin_notices', function() {
     echo '<a href="' . esc_url( admin_url( 'admin.php?page=s-store' ) ) . '">بازگشت به S Store</a>';
     echo '</div>';
 } );
+
+function s_store_sidebar_menu_tree() {
+    if ( ! current_user_can( 'manage_options' ) ) return [];
+
+    $groups = s_store_plugin_admin_pages();
+    $tree = [];
+
+    foreach ( $groups as $slug => $group ) {
+        $plugin = $group['plugin'] ?? [];
+        $pages  = $group['pages'] ?? [];
+        if ( ! $pages ) continue;
+
+        $tree[] = [
+            'slug'  => sanitize_key( $slug ),
+            'title' => sanitize_text_field( $plugin['name'] ?? $slug ),
+            'icon'  => s_store_plugin_icon_url( $slug ),
+            'pages' => array_values( array_map( function( $page ) {
+                return [
+                    'title' => sanitize_text_field( $page['title'] ?? 'صفحه افزونه' ),
+                    'slug'  => sanitize_text_field( $page['slug'] ?? '' ),
+                    'url'   => esc_url_raw( $page['url'] ?? '' ),
+                ];
+            }, $pages ) ),
+        ];
+    }
+
+    return $tree;
+}
+
+add_action( 'admin_enqueue_scripts', function() {
+    if ( ! current_user_can( 'manage_options' ) ) return;
+
+    wp_enqueue_style(
+        's-store-sidebar-menu',
+        S_STORE_URL . 'assets/sidebar-menu.css',
+        [],
+        S_STORE_VERSION
+    );
+
+    wp_enqueue_script(
+        's-store-sidebar-menu',
+        S_STORE_URL . 'assets/sidebar-menu.js',
+        [],
+        S_STORE_VERSION,
+        true
+    );
+
+    wp_localize_script(
+        's-store-sidebar-menu',
+        'SStoreSidebarMenu',
+        [
+            'tree'      => s_store_sidebar_menu_tree(),
+            'menuLabel' => 'افزونه‌ها',
+        ]
+    );
+}, 99 );
 
 function s_store_register_submenu( $slug, $menu_title, $callback, $capability = 'manage_options', $page_title = '' ) {
     $page_title = $page_title ?: $menu_title;
