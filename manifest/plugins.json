@@ -190,15 +190,15 @@
     {
       "slug": "woocommerce-sms-orders",
       "name": "پیامک سفارشات ووکامرس",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "description": "پیامک سفارشات ووکامرس",
       "repo": "https://github.com/sahandse/woocommerce-sms-orders",
       "homepage": "https://github.com/sahandse/woocommerce-sms-orders",
-      "download_url": "https://github.com/sahandse/woocommerce-sms-orders/archive/refs/heads/main.zip",
+      "download_url": "https://github.com/sahandse/woocommerce-sms-orders/releases/download/woocommerce-sms-orders-v1.0.2/woocommerce-sms-orders.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "Native زیر S Store، آیکون اختصاصی و سازگاری با نصب و بروزرسانی مرکزی.",
+      "changelog": "رفع خطای Native زیر S Store، ثبت صحیح صفحه لاگ‌ها، بارگذاری Assets در زیرمنوی جدید و استفاده از ZIP Release استاندارد.",
       "available": true
     },
     {
