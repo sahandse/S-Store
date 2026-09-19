@@ -23,7 +23,7 @@ jobs:
         id: version
         shell: bash
         run: |
-          VERSION=$(grep -oP '^ \\* Version: \\K[0-9.]+' plugins/s-store/s-store.php | head -1)
+          VERSION=$(awk '/^[[:space:]]*\\* Version:/ {print $3; exit}' plugins/s-store/s-store.php)
           if [ -z "$VERSION" ]; then
             echo "Version not found"
             exit 1
