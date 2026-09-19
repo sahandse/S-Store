@@ -241,6 +241,11 @@ function s_store_managed_page_slugs() {
 }
 
 function s_store_is_managed_admin_page() {
+    if ( ! empty( $_GET['post_type'] ) ) {
+        $post_type = sanitize_key( wp_unslash( $_GET['post_type'] ) );
+        if ( in_array( $post_type, [ 'cardyar_payment' ], true ) ) return true;
+    }
+
     if ( empty( $_GET['page'] ) ) return false;
     $page = sanitize_key( wp_unslash( $_GET['page'] ) );
     if ( in_array( $page, s_store_managed_page_slugs(), true ) ) return true;
