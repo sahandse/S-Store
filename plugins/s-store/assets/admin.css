@@ -104,3 +104,39 @@ body.s-store-admin-page #adminmenu li.opensub>a{color:#fff;background:rgba(255,2
 .s-store-plugin-icon.has-image img{width:100%;height:100%;display:block;object-fit:cover;border-radius:12px}
 .s-store-plugin-icon.detail.has-image{padding:5px;border-radius:22px}
 .s-store-plugin-icon.detail.has-image img{border-radius:18px}
+
+
+/* Per-plugin dashboard */
+.s-store-plugin-dashboard{margin:14px 0 18px}
+.s-store-dashboard-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.s-store-dashboard-head>div{display:flex;align-items:center;gap:8px}
+.s-store-dashboard-head h3{margin:0;color:#153a63;font-size:18px}
+.s-store-dashboard-head .dashicons{color:#1478ff}
+.s-store-dashboard-head>span{font-size:11px;color:#7c90a4;background:#fff;border:1px solid var(--ss-border);border-radius:999px;padding:6px 9px}
+.s-store-metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.s-store-metric-card{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--ss-border);border-radius:16px;padding:14px;box-shadow:0 6px 20px rgba(24,72,116,.04)}
+.s-store-metric-card>.dashicons{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:#eaf5ff;color:#1478ff;font-size:21px}
+.s-store-metric-card div{min-width:0}.s-store-metric-card small,.s-store-metric-card em{display:block}.s-store-metric-card small{color:#6f8599;font-size:10px}.s-store-metric-card strong{display:block;color:#12385f;font-size:20px;margin:3px 0}.s-store-metric-card em{font-style:normal;color:#8a9baa;font-size:9px}
+.s-store-dashboard-grid{display:grid;grid-template-columns:1fr 1fr .85fr;gap:12px}
+.s-store-service-list,.s-store-activity-list{display:grid;gap:4px}
+.s-store-service-row,.s-store-activity-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #eef3f7}
+.s-store-service-row:last-child,.s-store-activity-row:last-child{border-bottom:0}
+.s-store-service-row>i,.s-store-activity-row>i{width:9px;height:9px;border-radius:50%;flex:0 0 9px;background:#a8b7c5}
+.s-store-service-row>i.ok,.s-store-activity-row>i.success{background:#18b77f;box-shadow:0 0 0 5px rgba(24,183,127,.10)}
+.s-store-service-row>i.warn,.s-store-activity-row>i.warning{background:#ff9f1c;box-shadow:0 0 0 5px rgba(255,159,28,.10)}
+.s-store-service-row>i.error,.s-store-activity-row>i.error{background:#ef476f;box-shadow:0 0 0 5px rgba(239,71,111,.10)}
+.s-store-service-row>i.info,.s-store-activity-row>i.info{background:#1478ff;box-shadow:0 0 0 5px rgba(20,120,255,.10)}
+.s-store-service-row>div,.s-store-activity-row>div{flex:1;min-width:0}
+.s-store-service-row strong,.s-store-service-row small,.s-store-activity-row strong,.s-store-activity-row small{display:block}
+.s-store-service-row strong,.s-store-activity-row strong{color:#244a6d;font-size:11px}
+.s-store-service-row small,.s-store-activity-row small{color:#8497a8;font-size:9px;margin-top:2px}
+.s-store-service-row>span{font-size:8px;color:#8fa0b0;background:#f2f6fa;border-radius:99px;padding:4px 7px}
+.s-store-activity-empty{padding:20px;text-align:center;color:#8396a8;background:#f8fbfe;border:1px dashed #d9e6f1;border-radius:12px;font-size:11px}
+.s-store-quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.s-store-quick-action{display:flex;align-items:center;gap:8px;text-decoration:none;border:1px solid #dce8f3;background:#fff;border-radius:12px;padding:11px;color:#4c7192}
+.s-store-quick-action:hover{background:#f7fbff;border-color:#bdd8ef;color:#1478ff}
+.s-store-quick-action.primary{background:linear-gradient(135deg,#1989ff,#0b68e9);border-color:transparent;color:#fff}
+.s-store-quick-action .dashicons{font-size:17px;width:17px;height:17px}
+.s-store-quick-action strong{font-size:10px}
+@media(max-width:1080px){.s-store-metric-grid{grid-template-columns:repeat(2,1fr)}.s-store-dashboard-grid{grid-template-columns:1fr}}
+@media(max-width:640px){.s-store-metric-grid{grid-template-columns:1fr}.s-store-dashboard-head{align-items:flex-start;flex-direction:column}.s-store-quick-actions{grid-template-columns:1fr}}
