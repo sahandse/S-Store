@@ -136,14 +136,17 @@ function s_store_upgrader_source_selection( $source, $remote_source, $upgrader, 
 
     if ( ! $slug ) return $source;
     $p = s_store_plugin_by_slug( $slug );
-    if ( ! $p || empty( $p['source_subdir'] ) ) return $source;
+    if ( ! $p ) return $source;
 
-    $nested = trailingslashit( $source ) . trim( $p['source_subdir'], '/' );
-    if ( ! is_dir( $nested ) ) {
-        return new WP_Error(
-            's_store_source_missing',
-            sprintf( 'مسیر افزونه %s داخل بسته دانلودی پیدا نشد.', esc_html( $p['name'] ?? $slug ) )
-        );
+    $nested = $source;
+    if ( ! empty( $p['source_subdir'] ) ) {
+        $nested = trailingslashit( $source ) . trim( $p['source_subdir'], '/' );
+        if ( ! is_dir( $nested ) ) {
+            return new WP_Error(
+                's_store_source_missing',
+                sprintf( 'مسیر افزونه %s داخل بسته دانلودی پیدا نشد.', esc_html( $p['name'] ?? $slug ) )
+            );
+        }
     }
 
     global $wp_filesystem;
