@@ -9,13 +9,12 @@
       "description": "ابزار مدیریت و بروزرسانی مرکزی افزونه‌ها",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/s-store",
-      "download_url": "https://github.com/sahandse/S-Store/archive/refs/heads/main.zip",
+      "download_url": "https://github.com/sahandse/S-Store/releases/download/s-store-v2.1.0/s-store.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
       "changelog": "Backup & Rollback Center: Snapshot خودکار و اجباری قبل از Auto Fix و بروزرسانی، پشتیبان فایل‌های افزونه + تنظیمات شناخته‌شده + وضعیت Cron، نگه‌داری ۲۰ Snapshot آخر، Rollback یک‌کلیک و حذف Snapshot.",
-      "available": true,
-      "source_subdir": "plugins/s-store"
+      "available": true
     },
     {
       "slug": "support-button",
