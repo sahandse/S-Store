@@ -866,6 +866,12 @@ add_action( 'admin_post_s_store_autofix', function() {
     $message = 'عملیات رفع خودکار انجام شد.';
 
     try {
+        $snapshot_slug = $slug ?: 's-store';
+        $snapshot = s_store_snapshot_create( $snapshot_slug, 'autofix-' . $fix );
+        if ( is_wp_error( $snapshot ) ) {
+            throw new Exception( 'ساخت Snapshot قبل از Auto Fix ناموفق بود: ' . $snapshot->get_error_message() );
+        }
+
         switch ( $fix ) {
             case 'rebuild_manifest':
                 delete_site_transient( 's_store_manifest_v1' );
@@ -1844,6 +1850,11 @@ add_action( 'admin_post_s_store_update', function() {
 
     $installed = s_store_installed_map();
     if ( empty( $installed[ $slug ]['file'] ) ) wp_die( 'افزونه نصب‌شده پیدا نشد.' );
+
+    $snapshot = s_store_snapshot_create( $slug, 'update' );
+    if ( is_wp_error( $snapshot ) ) {
+        wp_die( esc_html( 'ساخت Snapshot قبل از بروزرسانی ناموفق بود: ' . $snapshot->get_error_message() ) );
+    }
 
     require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
     require_once ABSPATH . 'wp-admin/includes/file.php';
