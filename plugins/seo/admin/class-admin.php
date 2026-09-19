@@ -29,15 +29,13 @@ class WSS_Admin {
     }
 
     public function register_menus() {
-        add_menu_page(
-            'Speed & SEO Optimizer',
-            'Speed & SEO',
-            'manage_options',
-            'wss-dashboard',
-            [ $this, 'page_dashboard' ],
-            'dashicons-chart-line',
-            65
-        );
+        if ( function_exists( 's_store_register_submenu' ) ) {
+            s_store_register_submenu('wss-dashboard','سئو سهند',[ $this, 'page_dashboard' ],'manage_options','Speed & SEO Optimizer');
+            $parent_slug = 's-store';
+        } else {
+            add_menu_page('Speed & SEO Optimizer','Speed & SEO','manage_options','wss-dashboard',[ $this, 'page_dashboard' ],'dashicons-chart-line',65);
+            $parent_slug = 'wss-dashboard';
+        }
 
         $pages = [
             [ 'wss-speed',        'بهینه‌سازی سرعت', [ $this, 'page_speed' ] ],
@@ -58,7 +56,7 @@ class WSS_Admin {
         ];
 
         foreach ( $pages as $p ) {
-            add_submenu_page( 'wss-dashboard', $p[1], $p[1], 'manage_options', $p[0], $p[2] );
+            add_submenu_page( $parent_slug, $p[1], $p[1], 'manage_options', $p[0], $p[2] );
         }
     }
 
