@@ -1,0 +1,326 @@
+/* S Store Shared Admin Design System v1 */
+:root{
+  --ssds-bg:#f6faff;
+  --ssds-surface:#ffffff;
+  --ssds-surface-soft:#f8fbff;
+  --ssds-text:#12365d;
+  --ssds-muted:#71879c;
+  --ssds-border:#e2ecf6;
+  --ssds-primary:#1478ff;
+  --ssds-primary-2:#0b63dc;
+  --ssds-success:#16b67d;
+  --ssds-warning:#ff9f1c;
+  --ssds-danger:#e74c6b;
+  --ssds-radius:18px;
+  --ssds-radius-sm:12px;
+  --ssds-shadow:0 8px 28px rgba(24,72,116,.06);
+  --ssds-shadow-hover:0 14px 36px rgba(24,72,116,.10);
+}
+
+body.s-store-managed-page{
+  background:
+    radial-gradient(circle at 8% 2%,rgba(20,120,255,.05),transparent 22%),
+    radial-gradient(circle at 94% 4%,rgba(22,182,125,.045),transparent 18%),
+    var(--ssds-bg);
+}
+body.s-store-managed-page #wpcontent{background:transparent}
+body.s-store-managed-page #wpbody-content{padding-bottom:40px}
+
+/* Main wrappers */
+body.s-store-managed-page .wrap{
+  max-width:1220px;
+  direction:rtl;
+  color:var(--ssds-text);
+}
+body.s-store-managed-page .wrap[class*="-admin"]{
+  font-family:Tahoma,Arial,sans-serif;
+}
+
+/* Hero/header normalization */
+body.s-store-managed-page [class$="-hero"],
+body.s-store-managed-page [class*="-hero "]{
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  margin:22px 0 18px!important;
+  padding:24px 26px!important;
+  background:
+    linear-gradient(120deg,#fff 0%,#f5faff 64%,#eefbf7 100%)!important;
+  border:1px solid var(--ssds-border)!important;
+  border-radius:22px!important;
+  box-shadow:var(--ssds-shadow)!important;
+}
+body.s-store-managed-page [class$="-hero"]:before,
+body.s-store-managed-page [class*="-hero "]:before{
+  content:"";
+  position:absolute;
+  left:-45px;
+  top:-55px;
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(20,120,255,.12),transparent 70%);
+  pointer-events:none;
+}
+body.s-store-managed-page [class$="-hero"] h1,
+body.s-store-managed-page [class*="-hero "] h1{
+  color:#0b315d!important;
+  font-size:24px!important;
+  font-weight:900!important;
+  line-height:1.35!important;
+  margin:0 0 7px!important;
+}
+body.s-store-managed-page [class$="-hero"] p,
+body.s-store-managed-page [class*="-hero "] p{
+  color:var(--ssds-muted)!important;
+  margin:0!important;
+  line-height:1.9!important;
+}
+body.s-store-managed-page [class$="-hero"]>span:last-child,
+body.s-store-managed-page [class*="-hero "]>span:last-child{
+  background:linear-gradient(135deg,var(--ssds-primary),var(--ssds-primary-2))!important;
+  color:#fff!important;
+  border:0!important;
+  padding:7px 11px!important;
+  border-radius:999px!important;
+  font-weight:700!important;
+  box-shadow:0 6px 14px rgba(20,120,255,.18)!important;
+}
+
+/* Grids */
+body.s-store-managed-page [class$="-grid"],
+body.s-store-managed-page [class*="-grid "]{
+  gap:14px!important;
+}
+
+/* Cards */
+body.s-store-managed-page [class$="-card"],
+body.s-store-managed-page [class*="-card "]{
+  background:var(--ssds-surface)!important;
+  border:1px solid var(--ssds-border)!important;
+  border-radius:var(--ssds-radius)!important;
+  padding:20px!important;
+  box-shadow:var(--ssds-shadow)!important;
+  transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;
+}
+body.s-store-managed-page [class$="-card"]:hover,
+body.s-store-managed-page [class*="-card "]:hover{
+  border-color:#cfdfef!important;
+  box-shadow:var(--ssds-shadow-hover)!important;
+}
+body.s-store-managed-page [class$="-card"] h2,
+body.s-store-managed-page [class*="-card "] h2,
+body.s-store-managed-page [class$="-card"] h3,
+body.s-store-managed-page [class*="-card "] h3{
+  color:#173b63!important;
+  font-weight:800!important;
+}
+body.s-store-managed-page [class$="-card"] p,
+body.s-store-managed-page [class*="-card "] p,
+body.s-store-managed-page [class$="-card"] small,
+body.s-store-managed-page [class*="-card "] small{
+  color:var(--ssds-muted)!important;
+  line-height:1.9!important;
+}
+
+/* Inputs */
+body.s-store-managed-page input[type="text"],
+body.s-store-managed-page input[type="url"],
+body.s-store-managed-page input[type="password"],
+body.s-store-managed-page input[type="number"],
+body.s-store-managed-page input[type="tel"],
+body.s-store-managed-page input[type="email"],
+body.s-store-managed-page input[type="date"],
+body.s-store-managed-page input[type="time"],
+body.s-store-managed-page textarea,
+body.s-store-managed-page select{
+  min-height:42px!important;
+  border:1px solid #d8e5f1!important;
+  background:#fbfdff!important;
+  color:#234765!important;
+  border-radius:11px!important;
+  box-shadow:none!important;
+  padding:8px 11px!important;
+  transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;
+}
+body.s-store-managed-page textarea{min-height:110px!important}
+body.s-store-managed-page input:focus,
+body.s-store-managed-page textarea:focus,
+body.s-store-managed-page select:focus{
+  border-color:#80b9f9!important;
+  background:#fff!important;
+  box-shadow:0 0 0 3px rgba(20,120,255,.10)!important;
+  outline:none!important;
+}
+body.s-store-managed-page label{
+  color:#284d70;
+}
+body.s-store-managed-page code{
+  border-radius:10px!important;
+  background:#f2f7fc!important;
+  color:#27557c!important;
+}
+
+/* WordPress buttons */
+body.s-store-managed-page .button,
+body.s-store-managed-page .button-secondary{
+  border-radius:10px!important;
+  min-height:38px!important;
+  padding:5px 13px!important;
+  border-color:#d6e4f1!important;
+  color:#456b90!important;
+  background:#fff!important;
+  box-shadow:none!important;
+}
+body.s-store-managed-page .button:hover,
+body.s-store-managed-page .button-secondary:hover{
+  background:#f5faff!important;
+  border-color:#bfd8ef!important;
+  color:#1478ff!important;
+}
+body.s-store-managed-page .button-primary,
+body.s-store-managed-page input.button-primary,
+body.s-store-managed-page button.button-primary{
+  border:0!important;
+  background:linear-gradient(135deg,var(--ssds-primary),var(--ssds-primary-2))!important;
+  color:#fff!important;
+  border-radius:10px!important;
+  min-height:39px!important;
+  padding:6px 16px!important;
+  font-weight:700!important;
+  box-shadow:0 7px 16px rgba(20,120,255,.17)!important;
+}
+body.s-store-managed-page .button-primary:hover{
+  filter:brightness(.97);
+  color:#fff!important;
+}
+
+/* Native checkbox/toggle normalization */
+body.s-store-managed-page input[type="checkbox"]{
+  border:1px solid #bdd0e2!important;
+  border-radius:7px!important;
+  box-shadow:none!important;
+}
+body.s-store-managed-page input[type="checkbox"]:checked{
+  background:var(--ssds-primary)!important;
+  border-color:var(--ssds-primary)!important;
+}
+
+/* Existing plugin switch rows */
+body.s-store-managed-page [class$="-switch"],
+body.s-store-managed-page [class*="-switch "]{
+  background:#f8fbff;
+  border:1px solid #e5eef7;
+  border-radius:12px;
+  padding:10px 12px!important;
+}
+
+/* Tables */
+body.s-store-managed-page .widefat,
+body.s-store-managed-page .wp-list-table{
+  border:1px solid var(--ssds-border)!important;
+  border-radius:14px!important;
+  overflow:hidden;
+  box-shadow:var(--ssds-shadow)!important;
+}
+body.s-store-managed-page .widefat thead th,
+body.s-store-managed-page .widefat tfoot th,
+body.s-store-managed-page .wp-list-table thead th{
+  background:#f4f9fe!important;
+  color:#416686!important;
+  border-bottom-color:#deebf6!important;
+}
+body.s-store-managed-page .widefat td,
+body.s-store-managed-page .wp-list-table td{
+  border-bottom-color:#eef4f8!important;
+}
+
+/* Notices */
+body.s-store-managed-page .notice{
+  border:1px solid var(--ssds-border)!important;
+  border-right-width:4px!important;
+  border-radius:12px!important;
+  box-shadow:0 5px 20px rgba(24,72,116,.04)!important;
+}
+body.s-store-managed-page .notice-success{border-right-color:var(--ssds-success)!important}
+body.s-store-managed-page .notice-warning{border-right-color:var(--ssds-warning)!important}
+body.s-store-managed-page .notice-error{border-right-color:var(--ssds-danger)!important}
+
+/* Tabs/nav */
+body.s-store-managed-page .nav-tab-wrapper{
+  border:0!important;
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-bottom:15px;
+}
+body.s-store-managed-page .nav-tab{
+  float:none!important;
+  border:1px solid #dce8f3!important;
+  background:#fff!important;
+  color:#5c7893!important;
+  border-radius:10px!important;
+  margin:0!important;
+}
+body.s-store-managed-page .nav-tab-active,
+body.s-store-managed-page .nav-tab:hover{
+  background:#1478ff!important;
+  color:#fff!important;
+  border-color:#1478ff!important;
+}
+
+/* S Store identity strip on managed pages */
+body.s-store-managed-page .s-store-managed-strip{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  background:linear-gradient(120deg,#0b315b,#0b5f9f);
+  color:#fff;
+  border-radius:14px;
+  padding:9px 13px;
+  margin:12px 0 0;
+  box-shadow:0 7px 20px rgba(10,60,110,.12);
+}
+body.s-store-managed-page .s-store-managed-strip strong{display:flex;align-items:center;gap:7px}
+body.s-store-managed-page .s-store-managed-strip span{color:#cfe6fb;font-size:11px}
+body.s-store-managed-page .s-store-managed-strip a{color:#fff;text-decoration:none;background:rgba(255,255,255,.11);padding:6px 9px;border-radius:9px}
+
+/* Complex plugin dashboards */
+body.s-store-managed-page .wss-wrap,
+body.s-store-managed-page .smart-seo-ai-wrap,
+body.s-store-managed-page .smart-seo-dashboard,
+body.s-store-managed-page .sb-admin-wrap{
+  color:var(--ssds-text);
+}
+body.s-store-managed-page .wss-card,
+body.s-store-managed-page .smart-seo-card,
+body.s-store-managed-page .ssai-card,
+body.s-store-managed-page .sb-card{
+  background:#fff!important;
+  border:1px solid var(--ssds-border)!important;
+  border-radius:var(--ssds-radius)!important;
+  box-shadow:var(--ssds-shadow)!important;
+}
+
+/* Mobile */
+@media(max-width:782px){
+  body.s-store-managed-page .wrap{margin:10px 0!important;padding:0 8px!important}
+  body.s-store-managed-page [class$="-hero"],
+  body.s-store-managed-page [class*="-hero "]{
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    padding:19px!important;
+    border-radius:17px!important;
+  }
+  body.s-store-managed-page [class$="-grid"],
+  body.s-store-managed-page [class*="-grid "]{
+    grid-template-columns:1fr!important;
+  }
+  body.s-store-managed-page input:not([type="checkbox"]):not([type="radio"]),
+  body.s-store-managed-page select,
+  body.s-store-managed-page textarea{max-width:100%!important}
+}
