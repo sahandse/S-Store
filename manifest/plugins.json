@@ -5,7 +5,7 @@
     {
       "slug": "s-store",
       "name": "فروشگاه افزونه اس",
-      "version": "1.5.1",
+      "version": "1.5.2",
       "description": "ابزار مدیریت و بروزرسانی مرکزی افزونه‌ها",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/s-store",
@@ -13,14 +13,14 @@
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "آیکون‌های اختصاصی دسته ۱، Native menu integration، اتصال Repoهای مستقل و اصلاح نصب ZIPهای GitHub.",
+      "changelog": "تکمیل آیکون‌های اختصاصی، Native menu integration دسته ۱ و ۲، اتصال Repoهای مستقل و اصلاح نصب ZIPهای GitHub.",
       "available": true,
       "source_subdir": "plugins/s-store"
     },
     {
       "slug": "support-button",
       "name": "دکمه پشتیبانی",
-      "version": "4.1.0",
+      "version": "4.1.1",
       "description": "دکمه و ویجت پشتیبانی",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/support-button",
@@ -28,7 +28,7 @@
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "",
+      "changelog": "Native زیر S Store و هماهنگی کامل با پنل مرکزی.",
       "available": true,
       "source_subdir": "plugins/support-button"
     },
@@ -49,7 +49,7 @@
     {
       "slug": "seo",
       "name": "سئو سهند",
-      "version": "3.1.0",
+      "version": "3.1.1",
       "description": "سئو وردپرس و ووکامرس",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/seo",
@@ -57,14 +57,14 @@
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "",
+      "changelog": "انتقال صفحه اصلی و تمام زیرمنوهای SEO به S Store.",
       "available": true,
       "source_subdir": "plugins/seo"
     },
     {
       "slug": "smart-seo-ai-pro",
       "name": "سئو هوشمند هوش مصنوعی",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "سئو هوشمند",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/smart-seo-ai-pro",
@@ -72,23 +72,23 @@
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "",
+      "changelog": "انتقال تمام صفحات Smart SEO AI به منوی S Store.",
       "available": true,
       "source_subdir": "plugins/smart-seo-ai-pro"
     },
     {
       "slug": "smart-delivery-for-woocommerce",
       "name": "ارسال هوشمند ووکامرس",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "description": "زمان‌بندی تحویل ووکامرس",
-      "repo": "https://github.com/sahandse/S-Store",
-      "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/smart-delivery-for-woocommerce",
-      "download_url": "",
+      "repo": "https://github.com/sahandse/smart-delivery-for-woocommerce",
+      "homepage": "https://github.com/sahandse/smart-delivery-for-woocommerce",
+      "download_url": "https://github.com/sahandse/smart-delivery-for-woocommerce/archive/refs/heads/main.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "",
-      "available": false
+      "changelog": "Native زیر S Store، آیکون اختصاصی و سازگاری با نصب و بروزرسانی مرکزی.",
+      "available": true
     },
     {
       "slug": "lucky-wheel-pro",
@@ -107,16 +107,16 @@
     {
       "slug": "wc-market-sync",
       "name": "همگام‌ساز بازار ووکامرس",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "description": "همگام‌سازی باسلام و ترب",
-      "repo": "https://github.com/sahandse/S-Store",
-      "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/wc-market-sync",
-      "download_url": "",
+      "repo": "https://github.com/sahandse/wc-market-sync",
+      "homepage": "https://github.com/sahandse/wc-market-sync",
+      "download_url": "https://github.com/sahandse/wc-market-sync/archive/refs/heads/main.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "",
-      "available": false
+      "changelog": "Native زیر S Store، آیکون اختصاصی و سازگاری با نصب و بروزرسانی مرکزی.",
+      "available": true
     },
     {
       "slug": "price-compare-assistant",
@@ -135,16 +135,16 @@
     {
       "slug": "woo-mobile-app-shell",
       "name": "اپ موبایل ووکامرس",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "تجربه موبایل و PWA برای ووکامرس",
-      "repo": "https://github.com/sahandse/S-Store",
-      "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/woo-mobile-app-shell",
-      "download_url": "",
+      "repo": "https://github.com/sahandse/woo-mobile-app-shell",
+      "homepage": "https://github.com/sahandse/woo-mobile-app-shell",
+      "download_url": "https://github.com/sahandse/woo-mobile-app-shell/archive/refs/heads/main.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "",
-      "available": false
+      "changelog": "Native زیر S Store، آیکون اختصاصی و سازگاری با نصب و بروزرسانی مرکزی.",
+      "available": true
     },
     {
       "slug": "appointment-booking-pro",
@@ -177,30 +177,30 @@
     {
       "slug": "product-video-reels",
       "name": "ویدئو و ریلز محصول",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "ویدئوی محصول و ریلز",
-      "repo": "https://github.com/sahandse/S-Store",
-      "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/product-video-reels",
-      "download_url": "",
+      "repo": "https://github.com/sahandse/product-video-reels",
+      "homepage": "https://github.com/sahandse/product-video-reels",
+      "download_url": "https://github.com/sahandse/product-video-reels/archive/refs/heads/main.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "",
-      "available": false
+      "changelog": "Native زیر S Store، آیکون اختصاصی و سازگاری با نصب و بروزرسانی مرکزی.",
+      "available": true
     },
     {
       "slug": "woocommerce-sms-orders",
       "name": "پیامک سفارشات ووکامرس",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "پیامک سفارشات ووکامرس",
-      "repo": "https://github.com/sahandse/S-Store",
-      "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/woocommerce-sms-orders",
-      "download_url": "",
+      "repo": "https://github.com/sahandse/woocommerce-sms-orders",
+      "homepage": "https://github.com/sahandse/woocommerce-sms-orders",
+      "download_url": "https://github.com/sahandse/woocommerce-sms-orders/archive/refs/heads/main.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "",
-      "available": false
+      "changelog": "Native زیر S Store، آیکون اختصاصی و سازگاری با نصب و بروزرسانی مرکزی.",
+      "available": true
     },
     {
       "slug": "login-sms-bale",
@@ -233,16 +233,16 @@
     {
       "slug": "woo-cashback-wallet",
       "name": "کش‌بک و کیف پول ووکامرس",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "کش‌بک و کیف پول",
-      "repo": "https://github.com/sahandse/S-Store",
-      "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/woo-cashback-wallet",
-      "download_url": "",
+      "repo": "https://github.com/sahandse/woo-cashback-wallet",
+      "homepage": "https://github.com/sahandse/woo-cashback-wallet",
+      "download_url": "https://github.com/sahandse/woo-cashback-wallet/archive/refs/heads/main.zip",
       "requires": "6.0",
       "tested": "6.8",
       "requires_php": "7.4",
-      "changelog": "",
-      "available": false
+      "changelog": "Native زیر S Store، آیکون اختصاصی و سازگاری با نصب و بروزرسانی مرکزی.",
+      "available": true
     },
     {
       "slug": "gheymatbar",
