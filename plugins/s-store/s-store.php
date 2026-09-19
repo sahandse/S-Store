@@ -3,7 +3,7 @@
  * Plugin Name: فروشگاه افزونه اس
  * Plugin URI: https://github.com/sahandse/S-Store
  * Description: فروشگاه و بروزرسان مرکزی افزونه‌های اختصاصی سهند رضوان با نصب، بروزرسانی، جزئیات افزونه و منوی یکپارچه.
- * Version: 2.0.0
+ * Version: 2.1.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Sahand Rezvan
@@ -13,7 +13,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'S_STORE_VERSION', '2.0.0' );
+define( 'S_STORE_VERSION', '2.1.0' );
 define( 'S_STORE_FILE', __FILE__ );
 define( 'S_STORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'S_STORE_URL', plugin_dir_url( __FILE__ ) );
@@ -219,7 +219,7 @@ add_filter( 'plugins_api', function( $result, $action, $args ) {
 
 function s_store_managed_page_slugs() {
     $slugs = [
-        's-store','s-store-all','s-store-installed','s-store-updates','s-store-health','s-store-autofix','s-store-settings','s-store-about',
+        's-store','s-store-all','s-store-installed','s-store-updates','s-store-health','s-store-autofix','s-store-backups','s-store-settings','s-store-about',
         'appointment-booking-pro','cardyar','cash-installment-price','delivery-calendar','gheymatbar',
         'login-sms-bale','lucky-wheel-pro','media-optimizer','price-compare-assistant','product-video-reels',
         'wc-market-sync','woo-cashback-wallet','woo-mobile-app-shell','woocommerce-sms-orders',
@@ -395,6 +395,7 @@ add_action( 'admin_menu', function() {
     add_submenu_page( 's-store', 'بروزرسانی‌ها', 'بروزرسانی‌ها', 'update_plugins', 's-store-updates', 's_store_updates_page' );
     add_submenu_page( 's-store', 'مرکز سلامت', 'مرکز سلامت', 'manage_options', 's-store-health', 's_store_health_center_page' );
     add_submenu_page( 's-store', 'رفع خودکار', 'رفع خودکار', 'manage_options', 's-store-autofix', 's_store_autofix_center_page' );
+    add_submenu_page( 's-store', 'Backup & Rollback', 'Backup & Rollback', 'manage_options', 's-store-backups', 's_store_backup_center_page' );
     add_submenu_page( 's-store', 'تنظیمات', 'تنظیمات', 'manage_options', 's-store-settings', 's_store_settings_page' );
     add_submenu_page( 's-store', 'درباره', 'درباره', 'manage_options', 's-store-about', 's_store_about_page' );
     do_action( 's_store_admin_menu' );
@@ -430,6 +431,319 @@ function s_store_stats( $plugins, $installed ) {
     }
     return $stats;
 }
+
+function s_store_snapshot_option_keys( $slug ) {
+    $map = [
+        'appointment-booking-pro'        => [ 'abp_settings' ],
+        'cardyar'                        => [ 'cardyar_settings' ],
+        'cash-installment-price'         => [ 'cip_settings' ],
+        'delivery-calendar'              => [ 'dc_settings', 'delivery_calendar_settings' ],
+        'gheymatbar'                     => [ 'gheymatbar_settings', 'gb_settings' ],
+        'login-sms-bale'                 => [ 'lsb_settings' ],
+        'lucky-wheel-pro'                => [ 'lwp_settings' ],
+        'media-optimizer'                => [ 'mo_settings' ],
+        'price-compare-assistant'        => [ 'pca_settings' ],
+        'product-video-reels'            => [ 'pvr_settings' ],
+        'wc-market-sync'                 => [ 'wcms_settings' ],
+        'woo-cashback-wallet'            => [ 'wcw_settings', 'woo_cashback_wallet_settings' ],
+        'woo-mobile-app-shell'           => [ 'wmas_settings' ],
+        'woocommerce-sms-orders'         => [ 'wso_settings' ],
+        'smart-delivery-for-woocommerce' => [ 'sdw_settings', 'smart_delivery_settings' ],
+        'support-button'                 => [ 'sb_settings' ],
+        'domarhaleii'                    => [ 's2fa_settings' ],
+        'seo'                            => [ 'wss_speed', 'wss_seo', 'wss_social', 'wss_webmaster', 'wss_schema', 'wss_cache', 'wss_webp', 'wss_local_fonts', 'wss_critical_css' ],
+        'smart-seo-ai-pro'               => [ 'smart_seo_ai_settings', 'smart_seo_ai_db_version' ],
+        's-store'                        => [ 's_store_auto_updates' ],
+    ];
+    return apply_filters( 's_store_snapshot_option_keys', $map[ $slug ] ?? [], $slug );
+}
+
+function s_store_snapshot_cron_hooks( $slug ) {
+    $map = [
+        'support-button'   => [ 'sb_cleanup_event' ],
+        'smart-seo-ai-pro' => [ 'smart_seo_ai_daily_scan_cron', 'smart_seo_ai_cleanup_logs_cron' ],
+    ];
+    return apply_filters( 's_store_snapshot_cron_hooks', $map[ $slug ] ?? [], $slug );
+}
+
+function s_store_backup_root() {
+    $root = trailingslashit( WP_CONTENT_DIR ) . 's-store-backups';
+    if ( ! is_dir( $root ) ) {
+        wp_mkdir_p( $root );
+    }
+    if ( is_dir( $root ) ) {
+        if ( ! file_exists( $root . '/index.php' ) ) @file_put_contents( $root . '/index.php', "<?php\n// Silence is golden.\n" );
+        if ( ! file_exists( $root . '/.htaccess' ) ) @file_put_contents( $root . '/.htaccess', "Deny from all\n" );
+        if ( ! file_exists( $root . '/web.config' ) ) @file_put_contents( $root . '/web.config', '<configuration><system.webServer><authorization><deny users="*" /></authorization></system.webServer></configuration>' );
+    }
+    return $root;
+}
+
+function s_store_plugin_source_dir( $slug ) {
+    if ( 's-store' === $slug ) return untrailingslashit( S_STORE_DIR );
+
+    $file = s_store_find_installed_plugin_file_by_slug( $slug );
+    if ( ! $file ) return '';
+
+    $full = trailingslashit( WP_PLUGIN_DIR ) . $file;
+    $dir  = dirname( $full );
+
+    if ( trailingslashit( $dir ) === trailingslashit( WP_PLUGIN_DIR ) ) {
+        return $full;
+    }
+    return $dir;
+}
+
+function s_store_recursive_delete( $path ) {
+    if ( ! file_exists( $path ) ) return;
+    if ( is_file( $path ) || is_link( $path ) ) {
+        @unlink( $path );
+        return;
+    }
+    $items = scandir( $path );
+    if ( ! is_array( $items ) ) return;
+    foreach ( $items as $item ) {
+        if ( '.' === $item || '..' === $item ) continue;
+        s_store_recursive_delete( $path . DIRECTORY_SEPARATOR . $item );
+    }
+    @rmdir( $path );
+}
+
+function s_store_copy_path( $source, $destination ) {
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+
+    if ( is_file( $source ) ) {
+        wp_mkdir_p( dirname( $destination ) );
+        return @copy( $source, $destination );
+    }
+
+    if ( ! is_dir( $source ) ) return false;
+    wp_mkdir_p( $destination );
+    $result = copy_dir( $source, $destination );
+    return ! is_wp_error( $result );
+}
+
+function s_store_snapshot_create( $slug, $reason = 'manual' ) {
+    $slug = sanitize_key( $slug ?: 's-store' );
+    $root = s_store_backup_root();
+    if ( ! is_dir( $root ) || ! is_writable( $root ) ) {
+        return new WP_Error( 's_store_backup_unwritable', 'پوشه Backup قابل نوشتن نیست.' );
+    }
+
+    $source = s_store_plugin_source_dir( $slug );
+    $id     = gmdate( 'Ymd-His' ) . '-' . $slug . '-' . wp_generate_password( 6, false, false );
+    $dest   = trailingslashit( $root ) . $id;
+
+    $files_backed_up = false;
+    if ( $source && file_exists( $source ) ) {
+        $files_dest = $dest . '/plugin-files';
+        $files_backed_up = s_store_copy_path( $source, $files_dest );
+        if ( ! $files_backed_up ) {
+            s_store_recursive_delete( $dest );
+            return new WP_Error( 's_store_backup_copy_failed', 'کپی فایل‌های افزونه برای Snapshot ناموفق بود.' );
+        }
+    } else {
+        wp_mkdir_p( $dest );
+    }
+
+    $options = [];
+    foreach ( s_store_snapshot_option_keys( $slug ) as $key ) {
+        $exists = get_option( $key, '__s_store_missing__' );
+        $options[ $key ] = [
+            'exists' => '__s_store_missing__' !== $exists,
+            'value'  => '__s_store_missing__' !== $exists ? $exists : null,
+        ];
+    }
+
+    $cron = [];
+    foreach ( s_store_snapshot_cron_hooks( $slug ) as $hook ) {
+        $cron[ $hook ] = wp_next_scheduled( $hook );
+    }
+
+    $installed = s_store_installed_map();
+    $local     = $installed[ $slug ] ?? null;
+
+    $record = [
+        'id'         => $id,
+        'slug'       => $slug,
+        'reason'     => sanitize_key( $reason ),
+        'time'       => current_time( 'timestamp' ),
+        'version'    => $local['version'] ?? ( 's-store' === $slug ? S_STORE_VERSION : '' ),
+        'active'     => ! empty( $local['active'] ) || ( 's-store' === $slug && is_plugin_active( plugin_basename( S_STORE_FILE ) ) ),
+        'file'       => $local['file'] ?? ( 's-store' === $slug ? plugin_basename( S_STORE_FILE ) : '' ),
+        'source'     => $source,
+        'backup_dir' => $dest,
+        'files'      => $files_backed_up,
+        'options'    => $options,
+        'cron'       => $cron,
+        'user'       => get_current_user_id(),
+    ];
+
+    $snapshots = get_option( 's_store_snapshots', [] );
+    if ( ! is_array( $snapshots ) ) $snapshots = [];
+    array_unshift( $snapshots, $record );
+
+    while ( count( $snapshots ) > 20 ) {
+        $old = array_pop( $snapshots );
+        if ( ! empty( $old['backup_dir'] ) ) s_store_recursive_delete( $old['backup_dir'] );
+    }
+
+    update_option( 's_store_snapshots', $snapshots, false );
+    s_store_activity_log( $slug, 'snapshot', 'success', 'Snapshot ایمن قبل از ' . sanitize_text_field( $reason ) . ' ساخته شد.' );
+
+    return $id;
+}
+
+function s_store_snapshot_find( $id ) {
+    $snapshots = get_option( 's_store_snapshots', [] );
+    if ( ! is_array( $snapshots ) ) return null;
+    foreach ( $snapshots as $snapshot ) {
+        if ( ! empty( $snapshot['id'] ) && hash_equals( (string) $snapshot['id'], (string) $id ) ) return $snapshot;
+    }
+    return null;
+}
+
+function s_store_snapshot_restore( $id ) {
+    $snapshot = s_store_snapshot_find( $id );
+    if ( ! $snapshot ) return new WP_Error( 's_store_snapshot_missing', 'Snapshot پیدا نشد.' );
+
+    $slug = sanitize_key( $snapshot['slug'] ?? '' );
+    if ( ! $slug ) return new WP_Error( 's_store_snapshot_invalid', 'Snapshot معتبر نیست.' );
+
+    if ( ! empty( $snapshot['files'] ) && ! empty( $snapshot['backup_dir'] ) ) {
+        $backup_files = trailingslashit( $snapshot['backup_dir'] ) . 'plugin-files';
+        $target       = s_store_plugin_source_dir( $slug );
+
+        if ( ! file_exists( $backup_files ) ) {
+            return new WP_Error( 's_store_snapshot_files_missing', 'فایل‌های Backup پیدا نشدند.' );
+        }
+
+        if ( ! $target ) {
+            if ( ! empty( $snapshot['file'] ) ) {
+                $folder = dirname( $snapshot['file'] );
+                $target = '.' === $folder
+                    ? trailingslashit( WP_PLUGIN_DIR ) . basename( $snapshot['file'] )
+                    : trailingslashit( WP_PLUGIN_DIR ) . $folder;
+            } else {
+                $target = trailingslashit( WP_PLUGIN_DIR ) . $slug;
+            }
+        }
+
+        if ( file_exists( $target ) ) s_store_recursive_delete( $target );
+        if ( ! s_store_copy_path( $backup_files, $target ) ) {
+            return new WP_Error( 's_store_restore_files_failed', 'بازگردانی فایل‌های افزونه ناموفق بود.' );
+        }
+    }
+
+    foreach ( (array) ( $snapshot['options'] ?? [] ) as $key => $state ) {
+        if ( ! empty( $state['exists'] ) ) {
+            update_option( $key, $state['value'], false );
+        } else {
+            delete_option( $key );
+        }
+    }
+
+    foreach ( (array) ( $snapshot['cron'] ?? [] ) as $hook => $timestamp ) {
+        wp_clear_scheduled_hook( $hook );
+        if ( $timestamp ) {
+            wp_schedule_event( max( time() + 60, (int) $timestamp ), 'daily', $hook );
+        }
+    }
+
+    require_once ABSPATH . 'wp-admin/includes/plugin.php';
+    $file = ! empty( $snapshot['file'] ) ? $snapshot['file'] : s_store_find_installed_plugin_file_by_slug( $slug );
+    if ( $file ) {
+        if ( ! empty( $snapshot['active'] ) && ! is_plugin_active( $file ) ) {
+            $result = activate_plugin( $file );
+            if ( is_wp_error( $result ) ) return $result;
+        } elseif ( empty( $snapshot['active'] ) && is_plugin_active( $file ) && 's-store' !== $slug ) {
+            deactivate_plugins( $file, true );
+        }
+    }
+
+    delete_site_transient( 'update_plugins' );
+    s_store_activity_log( $slug, 'rollback', 'success', 'Snapshot ' . $id . ' با موفقیت بازگردانی شد.' );
+    return true;
+}
+
+function s_store_backup_center_notice() {
+    if ( empty( $_GET['s_store_backup_state'] ) ) return;
+    $state = sanitize_key( wp_unslash( $_GET['s_store_backup_state'] ) );
+    $msg = isset( $_GET['s_store_backup_message'] ) ? sanitize_text_field( wp_unslash( $_GET['s_store_backup_message'] ) ) : '';
+    echo '<div class="notice ' . ( 'success' === $state ? 'notice-success' : 'notice-error' ) . ' is-dismissible"><p>' . esc_html( $msg ) . '</p></div>';
+}
+
+function s_store_backup_center_page() {
+    s_store_admin_shell_start( 'Backup & Rollback Center', 'Snapshot خودکار قبل از Auto Fix و بروزرسانی، همراه با بازگردانی یک‌کلیک.' );
+    s_store_backup_center_notice();
+
+    $snapshots = get_option( 's_store_snapshots', [] );
+    if ( ! is_array( $snapshots ) ) $snapshots = [];
+
+    echo '<section class="s-store-backup-hero"><div><span class="dashicons dashicons-backup"></span><div><h2>نسخه‌های بازگشت</h2><p>حداکثر ۲۰ Snapshot آخر نگه‌داری می‌شود. تنظیمات حساس داخل دیتابیس وردپرس ذخیره می‌شوند.</p></div></div><span>' . esc_html( count( $snapshots ) ) . ' Snapshot</span></section>';
+
+    echo '<div class="s-store-backup-list">';
+    if ( ! $snapshots ) {
+        echo '<div class="s-store-all-good"><span class="dashicons dashicons-backup"></span><strong>هنوز Snapshot ساخته نشده</strong><p>قبل از اولین Auto Fix یا بروزرسانی، Snapshot به‌صورت خودکار ایجاد می‌شود.</p></div>';
+    }
+
+    foreach ( $snapshots as $snapshot ) {
+        $slug = sanitize_key( $snapshot['slug'] ?? '' );
+        $p    = s_store_plugin_by_slug( $slug );
+        $name = $p['name'] ?? $slug;
+        $time = ! empty( $snapshot['time'] ) ? wp_date( 'Y/m/d H:i', (int) $snapshot['time'] ) : '—';
+        $rollback = wp_nonce_url(
+            add_query_arg( [ 'action' => 's_store_rollback', 'snapshot' => $snapshot['id'] ], admin_url( 'admin-post.php' ) ),
+            's_store_rollback_' . $snapshot['id']
+        );
+        $delete = wp_nonce_url(
+            add_query_arg( [ 'action' => 's_store_delete_snapshot', 'snapshot' => $snapshot['id'] ], admin_url( 'admin-post.php' ) ),
+            's_store_delete_snapshot_' . $snapshot['id']
+        );
+
+        echo '<article class="s-store-backup-card">';
+        s_store_render_plugin_icon( $slug );
+        echo '<div class="s-store-backup-copy"><strong>' . esc_html( $name ) . '</strong><span>' . esc_html( $time ) . ' · ' . esc_html( $snapshot['reason'] ?? 'manual' ) . '</span><small>نسخه ' . esc_html( $snapshot['version'] ?: '—' ) . ( ! empty( $snapshot['files'] ) ? ' · فایل‌ها + تنظیمات' : ' · تنظیمات' ) . '</small></div>';
+        echo '<div class="s-store-backup-actions"><a class="s-store-btn primary" href="' . esc_url( $rollback ) . '"><span class="dashicons dashicons-undo"></span>Rollback</a><a class="s-store-btn ghost" href="' . esc_url( $delete ) . '"><span class="dashicons dashicons-trash"></span>حذف</a></div>';
+        echo '</article>';
+    }
+    echo '</div>';
+
+    s_store_admin_shell_end();
+}
+
+add_action( 'admin_post_s_store_rollback', function() {
+    if ( ! current_user_can( 'manage_options' ) ) wp_die( 'دسترسی غیرمجاز.' );
+    $id = isset( $_GET['snapshot'] ) ? sanitize_text_field( wp_unslash( $_GET['snapshot'] ) ) : '';
+    check_admin_referer( 's_store_rollback_' . $id );
+
+    $result = s_store_snapshot_restore( $id );
+    $state  = is_wp_error( $result ) ? 'error' : 'success';
+    $msg    = is_wp_error( $result ) ? $result->get_error_message() : 'Snapshot با موفقیت بازگردانی شد.';
+
+    wp_safe_redirect( add_query_arg( [ 'page' => 's-store-backups', 's_store_backup_state' => $state, 's_store_backup_message' => $msg ], admin_url( 'admin.php' ) ) );
+    exit;
+} );
+
+add_action( 'admin_post_s_store_delete_snapshot', function() {
+    if ( ! current_user_can( 'manage_options' ) ) wp_die( 'دسترسی غیرمجاز.' );
+    $id = isset( $_GET['snapshot'] ) ? sanitize_text_field( wp_unslash( $_GET['snapshot'] ) ) : '';
+    check_admin_referer( 's_store_delete_snapshot_' . $id );
+
+    $snapshots = get_option( 's_store_snapshots', [] );
+    $remaining = [];
+    foreach ( (array) $snapshots as $snapshot ) {
+        if ( ( $snapshot['id'] ?? '' ) === $id ) {
+            if ( ! empty( $snapshot['backup_dir'] ) ) s_store_recursive_delete( $snapshot['backup_dir'] );
+            continue;
+        }
+        $remaining[] = $snapshot;
+    }
+    update_option( 's_store_snapshots', $remaining, false );
+
+    wp_safe_redirect( add_query_arg( [ 'page' => 's-store-backups', 's_store_backup_state' => 'success', 's_store_backup_message' => 'Snapshot حذف شد.' ], admin_url( 'admin.php' ) ) );
+    exit;
+} );
 
 function s_store_autofix_url( $action, $slug = '', $return_page = 's-store-health' ) {
     $args = [
