@@ -173,3 +173,25 @@ body.s-store-admin-page #adminmenu li.opensub>a{color:#fff;background:rgba(255,2
 .s-store-health-banner-counts{display:flex;gap:5px;flex-wrap:wrap}.s-store-health-banner-counts span{border-radius:99px;padding:5px 8px;font-size:9px;font-weight:700}.s-store-health-banner-counts .ok{background:#e7f8f1;color:#14865f}.s-store-health-banner-counts .warn{background:#fff1db;color:#b66d08}.s-store-health-banner-counts .error{background:#ffe8ed;color:#c83253}
 @media(max-width:960px){.s-store-health-summary,.s-store-global-health{grid-template-columns:repeat(2,1fr)}.s-store-health-banner{grid-template-columns:auto 1fr}.s-store-health-banner-counts,.s-store-health-banner>.s-store-btn{grid-column:1/-1}.s-store-health-checks{grid-template-columns:1fr}}
 @media(max-width:640px){.s-store-health-summary,.s-store-global-health{grid-template-columns:1fr}.s-store-health-hero{align-items:flex-start;flex-direction:column}.s-store-health-plugin-head{align-items:flex-start;flex-wrap:wrap}.s-store-health-plugin-head>.s-store-btn{width:100%}}
+
+
+/* Auto Fix Center */
+.s-store-autofix-hero{display:flex;align-items:center;justify-content:space-between;gap:14px;background:linear-gradient(120deg,#fff,#f5faff 62%,#eefbf7);border:1px solid var(--ss-border);border-radius:20px;padding:18px 20px;box-shadow:var(--ss-shadow);margin-bottom:14px}
+.s-store-autofix-hero>div{display:flex;align-items:center;gap:12px}
+.s-store-autofix-hero>div>.dashicons{width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:#eaf5ff;color:#1478ff;font-size:24px}
+.s-store-autofix-hero h2{margin:0;color:#12385f;font-size:20px}.s-store-autofix-hero p{margin:4px 0 0;color:#7a8fa3;font-size:11px;line-height:1.8}
+.s-store-autofix-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.s-store-autofix-card{display:grid;grid-template-columns:auto 1fr;gap:11px;background:#fff;border:1px solid var(--ss-border);border-radius:17px;padding:15px;box-shadow:0 7px 22px rgba(24,72,116,.04)}
+.s-store-autofix-card>.dashicons{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:#edf6ff;color:#1478ff;font-size:21px}
+.s-store-autofix-card h3{margin:1px 0 4px;color:#1c4268;font-size:12px}.s-store-autofix-card p{margin:0;color:#7d91a4;font-size:9px;line-height:1.8}
+.s-store-autofix-card>.s-store-btn{grid-column:1/-1;justify-self:start}
+.s-store-autofix-issues{display:grid;gap:8px}
+.s-store-autofix-issue{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:1px solid var(--ss-border);border-radius:14px;padding:12px 14px}
+.s-store-autofix-issue strong,.s-store-autofix-issue small{display:block}.s-store-autofix-issue strong{color:#284d70;font-size:11px}.s-store-autofix-issue small{color:#8194a6;font-size:9px;margin-top:3px;line-height:1.7}
+.s-store-fix-btn{display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;text-decoration:none;background:#eef6ff;color:#1478ff;border:1px solid #cfe2f5;border-radius:9px;padding:6px 8px;font-size:9px;font-weight:800}
+.s-store-fix-btn:hover{background:#1478ff;color:#fff;border-color:#1478ff}
+.s-store-fix-btn .dashicons{font-size:13px;width:13px;height:13px}
+.s-store-health-check .s-store-fix-btn{margin-right:auto;align-self:center}
+.s-store-health-hero-actions{display:flex;gap:7px;flex-wrap:wrap}
+@media(max-width:960px){.s-store-autofix-grid{grid-template-columns:1fr}.s-store-autofix-hero{align-items:flex-start;flex-direction:column}}
+@media(max-width:640px){.s-store-autofix-issue{align-items:flex-start;flex-direction:column}.s-store-autofix-issue .s-store-btn{width:100%}.s-store-health-check{flex-wrap:wrap}.s-store-health-check .s-store-fix-btn{width:100%;justify-content:center;margin-top:4px}}
