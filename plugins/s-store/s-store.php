@@ -750,11 +750,19 @@ function s_store_plugin_real_metrics( $slug, $p, $local ) {
 
 function s_store_plugin_quick_actions( $slug, $p, $local ) {
     $actions = [];
+    $settings_pages = [
+        'domarhaleii'       => 'do-marhalei',
+        'seo'               => 'wss-dashboard',
+        'smart-seo-ai-pro'  => 'smart-seo-ai-dashboard',
+        'support-button'    => 'support-button',
+    ];
+    $settings_page = $settings_pages[ $slug ] ?? $slug;
+
     if ( $local && ! empty( $local['active'] ) ) {
         $actions[] = [
             'label' => 'تنظیمات',
             'icon'  => 'admin-generic',
-            'url'   => admin_url( 'admin.php?page=' . $slug ),
+            'url'   => admin_url( 'admin.php?page=' . $settings_page ),
             'class' => 'primary',
         ];
     }
