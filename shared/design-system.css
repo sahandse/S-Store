@@ -1,0 +1,24 @@
+/* S Store shared admin design system */
+.s-store-admin-ui{
+  --ss-bg:#f6f7fb;--ss-surface:#fff;--ss-border:#e7e9ee;--ss-text:#17191f;
+  --ss-muted:#6b7280;--ss-primary:#111827;--ss-success:#15803d;
+  --ss-warning:#b45309;--ss-danger:#b91c1c;--ss-radius:16px;
+  --ss-shadow:0 8px 30px rgba(15,23,42,.06);
+  background:var(--ss-bg);color:var(--ss-text)
+}
+.s-store-admin-ui .wrap{max-width:1440px}
+.s-store-admin-ui .sstore-shell{margin:24px 20px 40px 0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif}
+.s-store-admin-ui .sstore-header{display:flex;align-items:center;justify-content:space-between;gap:20px;background:linear-gradient(135deg,#fff,#f7f8fc);border:1px solid var(--ss-border);border-radius:22px;padding:24px 26px;box-shadow:var(--ss-shadow);margin-bottom:20px}
+.s-store-admin-ui .sstore-header h1{margin:0 0 6px;font-size:26px}
+.s-store-admin-ui .sstore-header p{margin:0;color:var(--ss-muted)}
+.s-store-admin-ui .sstore-card{background:var(--ss-surface);border:1px solid var(--ss-border);border-radius:var(--ss-radius);padding:22px;box-shadow:var(--ss-shadow);margin-bottom:18px}
+.s-store-admin-ui input[type=text],.s-store-admin-ui input[type=url],.s-store-admin-ui input[type=email],.s-store-admin-ui input[type=number],.s-store-admin-ui input[type=search],.s-store-admin-ui select,.s-store-admin-ui textarea{border:1px solid var(--ss-border);border-radius:11px;min-height:40px;background:#fff;box-shadow:none;padding:7px 11px}
+.s-store-admin-ui input:focus,.s-store-admin-ui select:focus,.s-store-admin-ui textarea:focus{border-color:#9ca3af;box-shadow:0 0 0 3px rgba(17,24,39,.07);outline:0}
+.s-store-admin-ui .button{border-radius:10px;min-height:38px;padding:4px 14px;box-shadow:none}
+.s-store-admin-ui .button-primary{background:var(--ss-primary);border-color:var(--ss-primary)}
+.s-store-admin-ui .widefat{overflow:hidden;border:1px solid var(--ss-border);border-radius:12px;box-shadow:none}
+.s-store-admin-ui .widefat thead th{background:#f8fafc;font-weight:700;border-bottom:1px solid var(--ss-border)}
+.s-store-admin-ui .nav-tab-wrapper{border-bottom:0;display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.s-store-admin-ui .nav-tab{border:1px solid var(--ss-border);background:#fff;border-radius:10px;margin:0;padding:8px 14px;color:#4b5563}
+.s-store-admin-ui .nav-tab-active,.s-store-admin-ui .nav-tab:hover{background:var(--ss-primary);border-color:var(--ss-primary);color:#fff}
+@media(max-width:782px){.s-store-admin-ui .sstore-shell{margin-right:0}.s-store-admin-ui .sstore-header{align-items:flex-start;flex-direction:column;padding:18px}}
