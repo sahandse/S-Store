@@ -209,3 +209,30 @@ body.s-store-admin-page #adminmenu li.opensub>a{color:#fff;background:rgba(255,2
 .s-store-backup-copy{flex:1;min-width:0}.s-store-backup-copy strong,.s-store-backup-copy span,.s-store-backup-copy small{display:block}.s-store-backup-copy strong{color:#1b4168;font-size:12px}.s-store-backup-copy span{color:#758ba0;font-size:9px;margin-top:3px}.s-store-backup-copy small{color:#97a6b4;font-size:9px;margin-top:3px}
 .s-store-backup-actions{display:flex;gap:7px;flex-wrap:wrap}
 @media(max-width:700px){.s-store-backup-hero{align-items:flex-start;flex-direction:column}.s-store-backup-card{align-items:flex-start;flex-wrap:wrap}.s-store-backup-copy{min-width:calc(100% - 65px)}.s-store-backup-actions{width:100%}.s-store-backup-actions .s-store-btn{flex:1}}
+
+
+/* S Store self update */
+.s-store-self-update{
+  display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;
+  margin:14px 0 18px;padding:16px 18px;background:#fff;border:1px solid var(--ss-border);
+  border-radius:18px;box-shadow:var(--ss-shadow)
+}
+.s-store-self-update.has-update{border-right:4px solid #ff9f1c;background:linear-gradient(120deg,#fff,#fffaf2)}
+.s-store-self-update.is-current{border-right:4px solid #18b77f;background:linear-gradient(120deg,#fff,#f5fcf9)}
+.s-store-self-update-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:#eaf5ff;color:#1478ff}
+.s-store-self-update.has-update .s-store-self-update-icon{background:#fff1db;color:#d98311}
+.s-store-self-update-icon .dashicons{font-size:24px;width:24px;height:24px}
+.s-store-self-update-copy small{display:block;color:#6f8aa4;font-size:9px;letter-spacing:1px;font-weight:800}
+.s-store-self-update-copy h3{margin:3px 0 4px;color:#153a61;font-size:15px}
+.s-store-self-update-copy p{margin:0;color:#74899d;font-size:10px;line-height:1.8}
+.s-store-self-update-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.s-store-settings-form .s-store-toggle-row + .s-store-toggle-row{margin-top:14px;padding-top:14px;border-top:1px solid #edf3f7}
+@media(max-width:900px){
+  .s-store-self-update{grid-template-columns:auto 1fr}
+  .s-store-self-update-actions{grid-column:1/-1;justify-content:flex-start}
+}
+@media(max-width:640px){
+  .s-store-self-update{grid-template-columns:1fr}
+  .s-store-self-update-icon{width:42px;height:42px}
+  .s-store-self-update-actions .s-store-btn{flex:1}
+}
