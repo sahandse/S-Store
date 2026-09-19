@@ -3,7 +3,7 @@
  * Plugin Name: فروشگاه افزونه اس
  * Plugin URI: https://github.com/sahandse/S-Store
  * Description: فروشگاه و بروزرسان مرکزی افزونه‌های اختصاصی سهند رضوان با نصب، بروزرسانی، جزئیات افزونه و منوی یکپارچه.
- * Version: 1.5.2
+ * Version: 1.6.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Sahand Rezvan
@@ -13,7 +13,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'S_STORE_VERSION', '1.5.2' );
+define( 'S_STORE_VERSION', '1.6.0' );
 define( 'S_STORE_FILE', __FILE__ );
 define( 'S_STORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'S_STORE_URL', plugin_dir_url( __FILE__ ) );
@@ -217,7 +217,46 @@ add_filter( 'plugins_api', function( $result, $action, $args ) {
     ];
 }, 10, 3 );
 
+function s_store_managed_page_slugs() {
+    $slugs = [
+        's-store','s-store-all','s-store-installed','s-store-updates','s-store-settings','s-store-about',
+        'appointment-booking-pro','cardyar','cash-installment-price','delivery-calendar','gheymatbar',
+        'login-sms-bale','lucky-wheel-pro','media-optimizer','price-compare-assistant','product-video-reels',
+        'wc-market-sync','woo-cashback-wallet','woo-mobile-app-shell','woocommerce-sms-orders',
+        'smart-delivery-for-woocommerce','support-button','support-button-conversations','support-button-settings',
+        'do-marhalei','wss-dashboard','wss-speed','wss-seo','wss-schema','wss-sitemap','wss-redirects',
+        'wss-cache','wss-webp','wss-broken-links','wss-rank-tracker','wss-vitals','wss-advanced-seo',
+        'wss-local-fonts','wss-critical-css','wss-health','wss-tools',
+        'smart-seo-ai-dashboard','smart-seo-ai-studio','smart-seo-ai-woocommerce',
+        'smart-seo-ai-security-speed','smart-seo-ai-autofix','smart-seo-ai-reports','smart-seo-ai-settings'
+    ];
+
+    foreach ( s_store_manifest_plugins() as $plugin ) {
+        if ( ! empty( $plugin['slug'] ) ) {
+            $slugs[] = sanitize_key( $plugin['slug'] );
+        }
+    }
+
+    return array_values( array_unique( array_filter( $slugs ) ) );
+}
+
+function s_store_is_managed_admin_page() {
+    if ( empty( $_GET['page'] ) ) return false;
+    $page = sanitize_key( wp_unslash( $_GET['page'] ) );
+    if ( in_array( $page, s_store_managed_page_slugs(), true ) ) return true;
+
+    return (
+        0 === strpos( $page, 'wss-' ) ||
+        0 === strpos( $page, 'smart-seo-ai-' ) ||
+        0 === strpos( $page, 'support-button' ) ||
+        0 === strpos( $page, 's-store' )
+    );
+}
+
 add_filter( 'admin_body_class', function( $classes ) {
+    if ( s_store_is_managed_admin_page() ) {
+        $classes .= ' s-store-managed-page';
+    }
     if ( ! empty( $_GET['page'] ) && 0 === strpos( sanitize_key( wp_unslash( $_GET['page'] ) ), 's-store' ) ) {
         $classes .= ' s-store-admin-page';
     }
@@ -225,10 +264,29 @@ add_filter( 'admin_body_class', function( $classes ) {
 } );
 
 add_action( 'admin_enqueue_scripts', function() {
-    if ( empty( $_GET['page'] ) || 0 !== strpos( sanitize_key( wp_unslash( $_GET['page'] ) ), 's-store' ) ) return;
+    if ( ! s_store_is_managed_admin_page() ) return;
+
     wp_enqueue_style( 'dashicons' );
-    wp_enqueue_style( 's-store-admin', S_STORE_URL . 'assets/admin.css', [], S_STORE_VERSION );
-    wp_enqueue_script( 's-store-admin', S_STORE_URL . 'assets/admin.js', [], S_STORE_VERSION, true );
+    wp_enqueue_style( 's-store-design-system', S_STORE_URL . 'assets/design-system.css', [], S_STORE_VERSION );
+
+    $page = ! empty( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+    if ( 0 === strpos( $page, 's-store' ) ) {
+        wp_enqueue_style( 's-store-admin', S_STORE_URL . 'assets/admin.css', [ 's-store-design-system' ], S_STORE_VERSION );
+        wp_enqueue_script( 's-store-admin', S_STORE_URL . 'assets/admin.js', [], S_STORE_VERSION, true );
+    }
+} );
+
+add_action( 'admin_notices', function() {
+    if ( ! s_store_is_managed_admin_page() ) return;
+    if ( empty( $_GET['page'] ) ) return;
+    $page = sanitize_key( wp_unslash( $_GET['page'] ) );
+    if ( 0 === strpos( $page, 's-store' ) ) return;
+
+    echo '<div class="s-store-managed-strip">';
+    echo '<strong><span class="dashicons dashicons-store"></span> مدیریت‌شده توسط S Store</strong>';
+    echo '<span>طراحی و بروزرسانی یکپارچه افزونه‌های Sahand Rezvan</span>';
+    echo '<a href="' . esc_url( admin_url( 'admin.php?page=s-store' ) ) . '">بازگشت به S Store</a>';
+    echo '</div>';
 } );
 
 function s_store_register_submenu( $slug, $menu_title, $callback, $capability = 'manage_options', $page_title = '' ) {
