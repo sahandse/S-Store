@@ -1,0 +1,67 @@
+name: Build S Store Installable ZIP
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'plugins/s-store/**'
+      - '.github/workflows/build-s-store-installable.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read version
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(grep -oP '^ \\* Version: \\K[0-9.]+' plugins/s-store/s-store.php | head -1)
+          if [ -z "$VERSION" ]; then
+            echo "Version not found"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: PHP syntax check
+        run: php -l plugins/s-store/s-store.php
+
+      - name: Build installable ZIP
+        shell: bash
+        run: |
+          rm -rf dist build
+          mkdir -p dist build/s-store
+          cp -R plugins/s-store/. build/s-store/
+          cd build
+          zip -qr "../dist/s-store.zip" s-store
+          cd ..
+          unzip -l dist/s-store.zip | head -40
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: s-store-v${{ steps.version.outputs.version }}
+          path: dist/s-store.zip
+          if-no-files-found: error
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        shell: bash
+        run: |
+          TAG="s-store-v${VERSION}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/s-store.zip --clobber
+          else
+            gh release create "$TAG" dist/s-store.zip \
+              --title "S Store v${VERSION}" \
+              --notes "Installable WordPress ZIP for S Store v${VERSION}. Upload s-store.zip from WordPress > Plugins > Add New > Upload Plugin."
+          fi
