@@ -1,0 +1,7 @@
+(()=>{const $=s=>document.querySelector(s), root=$('#sb-root');if(!root)return;const launch=$('#sb-launcher'),panel=$('#sb-panel'),close=$('#sb-close'),form=$('#sb-chat-form'),input=$('#sb-message'),msgs=$('#sb-messages');let pub=localStorage.getItem('sb_public_id')||'',last=0;
+ const post=async(action,data={})=>{const fd=new FormData();fd.append('action',action);fd.append('nonce',SBFront.nonce);Object.entries(data).forEach(([k,v])=>fd.append(k,v));return (await fetch(SBFront.ajax,{method:'POST',credentials:'same-origin',body:fd})).json()};
+ launch.onclick=async()=>{panel.hidden=false;if(!pub){const r=await post('sb_start_chat',{locale:SBFront.locale,page_url:location.href});if(r.success){pub=r.data.public_id;localStorage.setItem('sb_public_id',pub)}} poll()}; close.onclick=()=>panel.hidden=true;
+ function add(m){const d=document.createElement('div');d.className='sb-msg '+m.sender_type;d.textContent=m.message;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;last=Math.max(last,Number(m.id)||0)};
+ async function poll(){if(!pub||panel.hidden)return;const r=await post('sb_poll_messages',{public_id:pub,after:last});if(r.success)r.data.forEach(add)};
+ if(form)form.onsubmit=async e=>{e.preventDefault();const text=input.value.trim();if(!text)return;if(!pub){const r=await post('sb_start_chat',{locale:SBFront.locale,page_url:location.href});if(r.success){pub=r.data.public_id;localStorage.setItem('sb_public_id',pub)}} const r=await post('sb_send_message',{public_id:pub,message:text});if(r.success){input.value='';poll()}};setInterval(poll,4000);
+})();
