@@ -116,10 +116,24 @@ class Smart_SEO_AI_Loader {
 
 		// Main Menu
 		if ( function_exists( 's_store_register_submenu' ) ) {
-			s_store_register_submenu('smart-seo-ai-dashboard',__( 'سئو هوشمند AI', 'smart-seo-ai-suite-pro' ),'Smart_SEO_AI_Admin_Dashboard::render','edit_posts',__( 'Smart SEO AI Suite', 'smart-seo-ai-suite-pro' ));
+			s_store_register_submenu(
+				'smart-seo-ai-dashboard',
+				__( 'سئو هوشمند AI', 'smart-seo-ai-suite-pro' ),
+				'Smart_SEO_AI_Admin_Dashboard::render',
+				'edit_posts',
+				__( 'Smart SEO AI Suite', 'smart-seo-ai-suite-pro' )
+			);
 			$parent_slug = 's-store';
 		} else {
-			add_menu_page(__( 'Smart SEO AI Suite', 'smart-seo-ai-suite-pro' ),__( 'Smart SEO AI', 'smart-seo-ai-suite-pro' ),'edit_posts','smart-seo-ai-dashboard','Smart_SEO_AI_Admin_Dashboard::render','dashicons-superhero',30);
+			add_menu_page(
+				__( 'Smart SEO AI Suite', 'smart-seo-ai-suite-pro' ),
+				__( 'Smart SEO AI', 'smart-seo-ai-suite-pro' ),
+				'edit_posts',
+				'smart-seo-ai-dashboard',
+				'Smart_SEO_AI_Admin_Dashboard::render',
+				'dashicons-superhero',
+				30
+			);
 			$parent_slug = 'smart-seo-ai-dashboard';
 		}
 
