@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Smart SEO AI Suite Pro
+ * Plugin Name: سئو هوشمند هوش مصنوعی
  * Plugin URI: https://smartseoai.pro
  * Description: Enterprise All-in-One SEO Engine, AI Content Generator, WooCommerce Optimizer, Security Scanner, Performance Profiler, and Auto-Fix Suite for WordPress.
  * Version: 1.0.1
