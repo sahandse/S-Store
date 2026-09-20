@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: WordPress Speed & SEO Optimizer
+ * Plugin Name: سئو سهند
  * Plugin URI:  https://github.com/sahandse/seo
  * Description: افزونه جامع بهینه‌سازی سرعت و سئو وردپرس با پنل مدیریت کامل
  * Version:     3.1.1
