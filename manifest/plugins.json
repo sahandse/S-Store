@@ -5,7 +5,7 @@
     {
       "slug": "s-store",
       "name": "فروشگاه افزونه اس",
-      "version": "2.6.1",
+      "version": "1.5.0",
       "description": "ابزار مدیریت و بروزرسانی مرکزی افزونه‌ها",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/s-store",
@@ -19,7 +19,7 @@
     {
       "slug": "support-button",
       "name": "دکمه پشتیبانی",
-      "version": "4.1.1",
+      "version": "1.0.1",
       "description": "دکمه و ویجت پشتیبانی",
       "repo": "https://github.com/sahandse/S-Store",
       "homepage": "https://github.com/sahandse/S-Store/tree/main/plugins/support-button",
@@ -260,7 +260,7 @@
     {
       "slug": "cash-installment-price",
       "name": "قیمت نقدی و قسطی",
-      "version": "1.3.9",
+      "version": "1.3.8",
       "description": "قیمت نقدی و قسطی",
       "repo": "https://github.com/sahandse/cash-installment-price",
       "homepage": "https://github.com/sahandse/cash-installment-price",
